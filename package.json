@@ -14,7 +14,7 @@
     "@supabase/supabase-js": "^2.106.1",
     "@vueuse/core": "^10.9.0",
     "gsap": "^3.15.0",
-    "pdfjs-dist": "^4.0.379",
+    "pdfjs-dist": "3.11.174",
     "pinia": "^3.0.4",
     "vue": "^3.5.34",
     "vue-router": "^4.6.4"
