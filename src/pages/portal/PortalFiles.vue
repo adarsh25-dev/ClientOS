@@ -174,10 +174,9 @@ const getStatusLabel = (status) => {
           </div>
         </div>
 
-        <!-- Feedback thread panel if expanded -->
         <div 
           v-if="expandedFileId === file.id" 
-          class="border-t border-[#1E2030]/50 pt-4 mt-2 animate-fade-in"
+          class="border-t border-[#1E2030]/50 pt-4 mt-2 animate-fade-in h-[380px]"
         >
           <FeedbackThread
             v-if="activeProject"

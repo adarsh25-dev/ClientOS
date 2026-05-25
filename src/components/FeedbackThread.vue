@@ -173,7 +173,7 @@ const formatTime = (timeStr) => {
     <!-- Comments List -->
     <div 
       ref="threadContainer"
-      class="flex-1 overflow-y-auto p-4 flex flex-col gap-4 max-h-[350px] min-h-[180px]"
+      class="flex-1 overflow-y-auto p-4 flex flex-col gap-4 min-h-[180px]"
     >
       <div v-if="loading && comments.length === 0" class="flex flex-col gap-3 py-4">
         <div class="flex items-start gap-3">

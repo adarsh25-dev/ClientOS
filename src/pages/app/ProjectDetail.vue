@@ -465,7 +465,7 @@ onMounted(() => {
       </div>
 
       <!-- TAB 4: Discussion -->
-      <div v-else-if="activeTab === 'feedback'">
+      <div v-else-if="activeTab === 'feedback'" class="h-[550px]">
         <FeedbackThread 
           :projectId="projectId" 
           :currentUser="{ name: profile?.full_name || 'Freelancer', type: 'freelancer' }" 
