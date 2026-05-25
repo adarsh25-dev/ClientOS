@@ -33,7 +33,9 @@ export const useAuthStore = defineStore('auth', {
             this.user = session.user
             await this.fetchProfile(session.user.id)
             if (event === 'PASSWORD_RECOVERY') {
-              window.location.href = `${window.location.origin}/app/settings?tab=account`
+              if (window.location.pathname !== '/reset-password') {
+                window.location.href = `${window.location.origin}/reset-password`
+              }
             }
           } else {
             this.user = null
@@ -126,7 +128,7 @@ export const useAuthStore = defineStore('auth', {
       this.error = null
       try {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${window.location.origin}/login`
+          redirectTo: `${window.location.origin}/reset-password`
         })
         if (error) throw error
       } catch (err) {

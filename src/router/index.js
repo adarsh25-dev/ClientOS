@@ -5,6 +5,7 @@ import { useAuthStore } from '../stores/auth'
 import LandingPage from '../pages/landing/LandingPage.vue'
 import LoginPage from '../pages/auth/LoginPage.vue'
 import SignupPage from '../pages/auth/SignupPage.vue'
+import ResetPasswordPage from '../pages/auth/ResetPasswordPage.vue'
 import OnboardingPage from '../pages/OnboardingPage.vue'
 
 // App Pages
@@ -40,6 +41,11 @@ const routes = [
     path: '/signup',
     name: 'signup',
     component: SignupPage
+  },
+  {
+    path: '/reset-password',
+    name: 'reset-password',
+    component: ResetPasswordPage
   },
   {
     path: '/onboarding',
