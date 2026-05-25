@@ -81,7 +81,7 @@ onMounted(() => {
 <template>
   <div class="min-h-screen bg-background text-on-background flex font-body-md overflow-x-hidden selection:bg-primary-container selection:text-on-primary-container">
     <!-- SIDEBAR NAV (Desktop only: hidden on mobile) -->
-    <nav class="hidden md:flex w-[240px] h-screen fixed left-0 top-0 bg-custom-bg-sidebar border-r border-custom-border flex-col py-8 z-50">
+    <nav class="no-print hidden md:flex w-[240px] h-screen fixed left-0 top-0 bg-custom-bg-sidebar border-r border-custom-border flex-col py-8 z-50">
       <div class="px-6 mb-12">
         <h1 class="font-headline-md text-headline-md text-primary tracking-tighter">ClientOS</h1>
         <p class="font-label-caps text-label-caps text-custom-muted mt-1 uppercase tracking-widest text-[10px]">Elite Management</p>
@@ -128,7 +128,7 @@ onMounted(() => {
     </nav>
 
     <!-- MOBILE BOTTOM BAR (Visible only on screens < 768px) -->
-    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-custom-bg-sidebar border-t border-custom-border flex justify-around py-3 z-50">
+    <nav class="no-print md:hidden fixed bottom-0 left-0 right-0 bg-custom-bg-sidebar border-t border-custom-border flex justify-around py-3 z-50">
       <router-link
         v-for="item in navItems"
         :key="item.path"
@@ -144,7 +144,7 @@ onMounted(() => {
     <!-- MAIN WORKSPACE -->
     <div class="flex-1 md:ml-[240px] flex flex-col min-h-screen pb-20 md:pb-0">
       <!-- TOP BAR -->
-      <header class="flex justify-between items-center px-6 md:px-10 py-6 md:py-8 bg-background sticky top-0 z-40 border-b border-transparent">
+      <header class="no-print flex justify-between items-center px-6 md:px-10 py-6 md:py-8 bg-background sticky top-0 z-40 border-b border-transparent">
         <h2 class="font-headline-sm text-headline-sm text-on-background text-left">{{ greeting }}</h2>
         
         <div class="flex items-center gap-6">

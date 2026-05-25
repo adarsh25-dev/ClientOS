@@ -9,6 +9,7 @@ const router = useRouter()
 // Refs
 const email = ref('')
 const password = ref('')
+const showPassword = ref(false)
 const rememberMe = ref(false)
 
 const emailError = ref('')
@@ -210,12 +211,24 @@ onMounted(() => {
 
             <!-- Password -->
             <div v-if="!isResetMode" class="input-focus-border stagger-item anim-fade-up" style="transition-delay: 160ms;">
-              <input
-                v-model="password"
-                type="password"
-                placeholder="Password"
-                class="w-full bg-transparent border-0 border-b border-outline pb-3 font-body-lg text-body-lg text-on-surface placeholder-on-surface-variant focus:ring-0 px-0 transition-colors input-minimal"
-              />
+              <div class="relative w-full flex items-center">
+                <input
+                  v-model="password"
+                  :type="showPassword ? 'text' : 'password'"
+                  placeholder="Password"
+                  class="w-full bg-transparent border-0 border-b border-outline pb-3 pr-10 font-body-lg text-body-lg text-on-surface placeholder-on-surface-variant focus:ring-0 px-0 transition-colors input-minimal"
+                />
+                <button
+                  type="button"
+                  @click="showPassword = !showPassword"
+                  class="absolute right-0 text-on-surface-variant hover:text-on-surface focus:outline-none pr-1 pb-3"
+                  :aria-label="showPassword ? 'Hide password' : 'Show password'"
+                >
+                  <span class="material-symbols-outlined text-[20px]">
+                    {{ showPassword ? 'visibility_off' : 'visibility' }}
+                  </span>
+                </button>
+              </div>
               <span v-if="passwordError && formSubmitted" class="text-xs text-error mt-1 block">{{ passwordError }}</span>
             </div>
           </div>

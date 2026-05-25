@@ -125,7 +125,7 @@ export function useAI() {
         throw new Error('AI extraction unavailable. Please configure VITE_NVIDIA_API_KEY_VISION in your environment.')
       }
 
-      const systemPrompt = `You are a data extraction assistant. Extract all line items from the provided invoice, receipt, or timesheet image. Return ONLY a valid JSON array of objects. Do not wrap it in markdown block quotes. Each object MUST have exactly these keys: "description" (string), "qty" (number), "rate" (number). If an item lacks a quantity, default to 1. If an item lacks a rate, default to 0.`
+      const systemPrompt = `You are a data extraction assistant. Extract all line items from the provided invoice, receipt, or timesheet image. Return ONLY a valid JSON array of objects. You MUST use DOUBLE QUOTES (") for all JSON keys and string values, NEVER single quotes. Do not wrap it in markdown block quotes. Each object MUST have exactly these keys: "description" (string), "qty" (number), "rate" (number). If an item lacks a quantity, default to 1. If an item lacks a rate, default to 0.`
 
       const baseUrl = import.meta.env.VITE_NVIDIA_BASE_URL || '/api/nvidia/v1'
       const response = await fetch(`${baseUrl}/chat/completions`, {
@@ -155,9 +155,37 @@ export function useAI() {
       const data = await response.json()
 
       const rawText = data.choices[0]?.message?.content || '[]'
-      const cleanedText = rawText.replace(/```json/g, '').replace(/```/g, '').trim()
       
-      const parsed = JSON.parse(cleanedText)
+      const startIndex = rawText.indexOf('[')
+      const endIndex = rawText.lastIndexOf(']')
+      
+      if (startIndex === -1 || endIndex === -1 || startIndex > endIndex) {
+        throw new Error('AI did not return a valid list of items. Response: ' + rawText.substring(0, 100))
+      }
+      
+      const jsonString = rawText.substring(startIndex, endIndex + 1)
+      let parsed;
+      try {
+        parsed = JSON.parse(jsonString)
+      } catch (err) {
+        // Fallback for LLMs returning single-quoted JSON (e.g., {'description': '...'})
+        const fixedString = jsonString
+          .replace(/{'/g, '{"')
+          .replace(/'}/g, '"}')
+          .replace(/',/g, '",')
+          .replace(/, '/g, ', "')
+          .replace(/':/g, '":')
+          .replace(/: '/g, ': "')
+          .replace(/\['/g, '["')
+          .replace(/'\]/g, '"]')
+          .replace(/ {/g, ' {') // Optional whitespace normalization
+
+        try {
+          parsed = JSON.parse(fixedString)
+        } catch (fallbackErr) {
+          throw new Error('AI did not return a valid list of items. Response: ' + rawText.substring(0, 100))
+        }
+      }
       if (!Array.isArray(parsed)) {
         throw new Error('AI did not return a valid list of items.')
       }

@@ -38,8 +38,39 @@ const form = reactive({
   lineItems: [{ id: '1', description: '', qty: 1, rate: 0 }],
   notes: '',
   taxRate: 0,
-  taxEnabled: false
+  taxEnabled: false,
+  agencyName: '',
+  clientName: '',
+  clientCompany: '',
+  clientEmail: ''
 })
+
+import { watch } from 'vue'
+
+watch(() => form.clientId, (newId) => {
+  if (editMode.value && !loading.value) {
+    // Let loadInvoiceToEdit handle it if loading
+    const c = clientsStore.clients.find(c => c.id === newId)
+    if (c) {
+      form.clientName = c.name
+      form.clientCompany = c.company
+      form.clientEmail = c.email
+    }
+  } else if (!editMode.value) {
+    const c = clientsStore.clients.find(c => c.id === newId)
+    if (c) {
+      form.clientName = c.name
+      form.clientCompany = c.company
+      form.clientEmail = c.email
+    }
+  }
+})
+
+watch(() => [invoicesStore.currentInvoice, projectsStore.currentProject], () => {
+  if (!form.agencyName) {
+    form.agencyName = invoicesStore.currentInvoice?.profiles?.agency_name || projectsStore.currentProject?.profiles?.agency_name || 'Design Agency'
+  }
+}, { deep: true, immediate: true })
 
 // UI animations
 const triggerPulse = () => {
@@ -97,7 +128,9 @@ const removeLineItem = (index) => {
 }
 
 const getLineAmount = (item) => {
-  return (item.qty || 0) * (item.rate || 0)
+  const qty = parseFloat(item.qty) || 0
+  const rate = parseFloat(item.rate) || 0
+  return Number((qty * rate).toFixed(2))
 }
 
 const handleImageUpload = async (event) => {
@@ -159,16 +192,18 @@ const handleAutoWriteNotes = async () => {
 
 // Calculations
 const subtotal = computed(() => {
-  return form.lineItems.reduce((sum, item) => sum + getLineAmount(item), 0)
+  const sum = form.lineItems.reduce((acc, item) => acc + getLineAmount(item), 0)
+  return Number(sum.toFixed(2))
 })
 
 const taxAmount = computed(() => {
   if (!form.taxEnabled) return 0
-  return subtotal.value * ((form.taxRate || 0) / 100)
+  const rate = parseFloat(form.taxRate) || 0
+  return Number((subtotal.value * (rate / 100)).toFixed(2))
 })
 
 const total = computed(() => {
-  return subtotal.value + taxAmount.value
+  return Number((subtotal.value + taxAmount.value).toFixed(2))
 })
 
 // Form submit handlers
@@ -180,6 +215,13 @@ const saveInvoice = async (status = 'draft') => {
 
   saving.value = true
   try {
+    if (form.clientName || form.clientCompany || form.clientEmail) {
+      await clientsStore.updateClient(form.clientId, {
+        name: form.clientName,
+        company: form.clientCompany,
+        email: form.clientEmail
+      })
+    }
     const payload = {
       clientId: form.clientId,
       projectId: form.projectId || null,
@@ -239,6 +281,11 @@ const loadInvoiceToEdit = async (id) => {
     form.notes = data.notes || ''
     form.taxRate = data.tax_rate || 0
     form.taxEnabled = (data.tax_rate > 0)
+    
+    form.agencyName = data.profiles?.agency_name || 'Design Agency'
+    form.clientName = data.clients?.name || ''
+    form.clientCompany = data.clients?.company || ''
+    form.clientEmail = data.clients?.email || ''
   } catch (err) {
     toast.error('Failed to load invoice')
     router.push('/app/invoices')
@@ -272,7 +319,7 @@ const clientProjects = computed(() => {
 <template>
 <div class="h-[calc(100vh-80px)] overflow-hidden flex flex-col md:flex-row -mt-8 -mx-8 relative z-0">
   <!-- LEFT PANEL: Editor -->
-  <section class="w-full md:w-[55%] h-full overflow-y-auto bg-primary-container p-margin-desktop border-r border-outline-variant custom-scrollbar animate-rise relative">
+  <section class="w-full md:w-[55%] h-full overflow-y-auto bg-background p-margin-desktop border-r border-outline-variant custom-scrollbar animate-rise relative">
     <div class="max-w-2xl mx-auto space-y-16 pb-32 pt-8">
       <!-- Header -->
       <div class="space-y-4 flex justify-between items-start">
@@ -313,6 +360,19 @@ const clientProjects = computed(() => {
               <option v-for="c in clientsStore.clients" :key="c.id" :value="c.id" class="bg-surface text-on-surface">{{ c.name }} ({{ c.company }})</option>
             </select>
           </div>
+          
+          <div class="flex flex-col gap-2 md:col-span-2" v-if="form.clientId">
+            <label class="font-label-caps text-label-caps text-on-surface-variant uppercase">Client Name</label>
+            <input v-model="form.clientName" type="text" class="input-minimal font-body-lg text-body-lg w-full pb-2" @input="triggerPulse" />
+          </div>
+          <div class="flex flex-col gap-2" v-if="form.clientId">
+            <label class="font-label-caps text-label-caps text-on-surface-variant uppercase">Client Company</label>
+            <input v-model="form.clientCompany" type="text" class="input-minimal font-body-lg text-body-lg w-full pb-2" @input="triggerPulse" />
+          </div>
+          <div class="flex flex-col gap-2" v-if="form.clientId">
+            <label class="font-label-caps text-label-caps text-on-surface-variant uppercase">Client Email</label>
+            <input v-model="form.clientEmail" type="text" class="input-minimal font-body-lg text-body-lg w-full pb-2" @input="triggerPulse" />
+          </div>
         </div>
       </div>
 
@@ -320,6 +380,14 @@ const clientProjects = computed(() => {
       <div class="space-y-8 animate-rise stagger-2">
         <h2 class="font-label-caps text-label-caps text-tertiary uppercase tracking-widest border-b border-outline-variant pb-2">Project Details</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="flex flex-col gap-2 md:col-span-2">
+            <label class="font-label-caps text-label-caps text-on-surface-variant uppercase">Invoice Number</label>
+            <input v-model="form.invoiceNumber" type="text" class="input-minimal font-body-lg text-body-lg w-full pb-2" @input="triggerPulse" />
+          </div>
+          <div class="flex flex-col gap-2 md:col-span-2">
+            <label class="font-label-caps text-label-caps text-on-surface-variant uppercase">Agency Name</label>
+            <input v-model="form.agencyName" type="text" class="input-minimal font-body-lg text-body-lg w-full pb-2" @input="triggerPulse" />
+          </div>
           <div class="flex flex-col gap-2 md:col-span-2">
             <label class="font-label-caps text-label-caps text-on-surface-variant uppercase">Project Name (Optional)</label>
             <select
@@ -335,7 +403,7 @@ const clientProjects = computed(() => {
             <input
               v-model="form.issueDate"
               type="date"
-              class="input-minimal font-body-lg text-body-lg w-full pb-2 text-[#47464b]"
+              class="input-minimal font-body-lg text-body-lg w-full pb-2"
               style="color-scheme: dark;"
               @change="triggerPulse"
             />
@@ -345,7 +413,7 @@ const clientProjects = computed(() => {
             <input
               v-model="form.dueDate"
               type="date"
-              class="input-minimal font-body-lg text-body-lg w-full pb-2 text-[#47464b]"
+              class="input-minimal font-body-lg text-body-lg w-full pb-2"
               style="color-scheme: dark;"
               @change="triggerPulse"
             />
@@ -375,8 +443,9 @@ const clientProjects = computed(() => {
             <div class="col-span-4 md:col-span-2 flex flex-col gap-2">
               <label class="font-label-caps text-label-caps text-on-surface-variant uppercase" :class="{'md:opacity-100': index === 0, 'opacity-0 h-0 overflow-hidden md:h-auto': index !== 0}">Qty</label>
               <input
-                v-model.number="item.qty"
+                v-model="item.qty"
                 type="number"
+                step="any"
                 class="input-minimal font-body-md text-body-md w-full pb-1 item-qty"
                 @input="triggerPulse"
               />
@@ -384,15 +453,16 @@ const clientProjects = computed(() => {
             <div class="col-span-4 md:col-span-2 flex flex-col gap-2">
               <label class="font-label-caps text-label-caps text-on-surface-variant uppercase" :class="{'md:opacity-100': index === 0, 'opacity-0 h-0 overflow-hidden md:h-auto': index !== 0}">Rate</label>
               <input
-                v-model.number="item.rate"
+                v-model="item.rate"
                 type="number"
+                step="any"
                 class="input-minimal font-body-md text-body-md w-full pb-1 item-rate"
                 @input="triggerPulse"
               />
             </div>
             <div class="col-span-4 md:col-span-2 flex flex-col gap-2 text-right">
               <label class="font-label-caps text-label-caps text-on-surface-variant uppercase" :class="{'md:opacity-100': index === 0, 'opacity-0 h-0 overflow-hidden md:h-auto': index !== 0}">Amount</label>
-              <div class="font-headline-sm text-headline-sm text-on-surface pb-1 item-amount">${{ getLineAmount(item).toFixed(2) }}</div>
+              <div class="font-headline-sm text-headline-sm text-on-surface pb-1 item-amount"><span class="mr-0.5 font-body-md font-medium tracking-normal text-[0.8em] relative -top-[0.05em]">$</span>{{ getLineAmount(item).toFixed(2) }}</div>
             </div>
             <button
               v-if="form.lineItems.length > 1"
@@ -481,6 +551,7 @@ const clientProjects = computed(() => {
             <input
               v-model.number="form.taxRate"
               type="number"
+              step="any"
               class="input-minimal font-body-md text-body-md w-24 text-right pb-1"
               @input="triggerPulse"
             />
@@ -499,7 +570,7 @@ const clientProjects = computed(() => {
       <!-- "Printed" Invoice Canvas -->
       <div id="invoice-preview" class="w-full max-w-lg bg-[#F5F2EB] shadow-2xl p-12 text-[#0A0A0F] relative transition-all duration-300" :class="{ 'pulse-preview': isPulsing }">
         <div class="flex justify-between items-start mb-16">
-          <div class="font-headline-md text-headline-md font-bold tracking-tighter">{{ invoicesStore.currentInvoice?.profiles?.agency_name || projectsStore.currentProject?.profiles?.agency_name || 'Design Agency' }}</div>
+          <div class="font-headline-md text-headline-md font-bold tracking-tighter">{{ form.agencyName || 'Design Agency' }}</div>
           <div class="text-right">
             <h2 class="font-label-caps text-label-caps text-[#C9A84C] uppercase tracking-widest mb-1">Invoice</h2>
             <div class="font-body-md text-body-md text-[#474742]">#{{ form.invoiceNumber || 'INV-0000' }}</div>
@@ -509,10 +580,10 @@ const clientProjects = computed(() => {
         <div class="flex justify-between mb-16">
           <div>
             <div class="font-label-caps text-label-caps text-[#474742] uppercase tracking-widest mb-2">Billed To</div>
-            <div class="font-headline-sm text-headline-sm mb-1">{{ selectedClient?.name || 'Client Name' }}</div>
+            <div class="font-headline-sm text-headline-sm mb-1">{{ form.clientName || 'Client Name' }}</div>
             <div class="font-body-md text-body-md text-[#474742]">
-              <span>{{ selectedClient?.company || 'Company Name' }}</span><br/>
-              <span>{{ selectedClient?.email || 'email@example.com' }}</span>
+              <span>{{ form.clientCompany || 'Company Name' }}</span><br/>
+              <span>{{ form.clientEmail || 'email@example.com' }}</span>
             </div>
           </div>
           <div class="text-right">
@@ -540,7 +611,7 @@ const clientProjects = computed(() => {
             <tr v-for="(item, index) in form.lineItems" :key="index" class="border-b border-[#E8E4DC]">
               <td class="py-4">{{ item.description || ' ' }}</td>
               <td class="py-4 text-right">{{ item.qty }}</td>
-              <td class="py-4 text-right">${{ (item.rate || 0).toFixed(2) }}</td>
+              <td class="py-4 text-right">${{ Number(item.rate || 0).toFixed(2) }}</td>
               <td class="py-4 text-right">${{ getLineAmount(item).toFixed(2) }}</td>
             </tr>
           </tbody>
@@ -558,7 +629,7 @@ const clientProjects = computed(() => {
             </div>
             <div class="flex justify-between py-4 font-headline-sm text-headline-sm text-[#C9A84C]">
               <span>Total Due</span>
-              <span>${{ total.toFixed(2) }}</span>
+              <span><span class="mr-0.5 font-body-md font-medium tracking-normal text-[0.8em] relative -top-[0.05em]">$</span>{{ total.toFixed(2) }}</span>
             </div>
           </div>
         </div>
@@ -604,9 +675,9 @@ const clientProjects = computed(() => {
   </Teleport>
   
   <!-- PRINT ONLY PREVIEW -->
-  <div class="hidden print:block w-full max-w-lg mx-auto bg-[#F5F2EB] shadow-2xl p-12 text-[#0A0A0F] relative font-sans">
+  <div class="hidden print:block print-only-invoice w-full max-w-lg mx-auto bg-[#F5F2EB] shadow-2xl p-12 text-[#0A0A0F] relative font-sans">
     <div class="flex justify-between items-start mb-16">
-      <div class="font-headline-md text-headline-md font-bold tracking-tighter">{{ invoicesStore.currentInvoice?.profiles?.agency_name || projectsStore.currentProject?.profiles?.agency_name || 'Design Agency' }}</div>
+      <div class="font-headline-md text-headline-md font-bold tracking-tighter">{{ form.agencyName || 'Design Agency' }}</div>
       <div class="text-right">
         <h2 class="font-label-caps text-label-caps text-[#C9A84C] uppercase tracking-widest mb-1">Invoice</h2>
         <div class="font-body-md text-body-md text-[#474742]">#{{ form.invoiceNumber || 'INV-0000' }}</div>
@@ -616,10 +687,10 @@ const clientProjects = computed(() => {
     <div class="flex justify-between mb-16">
       <div>
         <div class="font-label-caps text-label-caps text-[#474742] uppercase tracking-widest mb-2">Billed To</div>
-        <div class="font-headline-sm text-headline-sm mb-1">{{ selectedClient?.name || 'Client Name' }}</div>
+        <div class="font-headline-sm text-headline-sm mb-1">{{ form.clientName || 'Client Name' }}</div>
         <div class="font-body-md text-body-md text-[#474742]">
-          <span>{{ selectedClient?.company || 'Company Name' }}</span><br/>
-          <span>{{ selectedClient?.email || 'email@example.com' }}</span>
+          <span>{{ form.clientCompany || 'Company Name' }}</span><br/>
+          <span>{{ form.clientEmail || 'email@example.com' }}</span>
         </div>
       </div>
       <div class="text-right">
@@ -647,7 +718,7 @@ const clientProjects = computed(() => {
         <tr v-for="(item, index) in form.lineItems" :key="index" class="border-b border-[#E8E4DC]">
           <td class="py-4">{{ item.description || ' ' }}</td>
           <td class="py-4 text-right">{{ item.qty }}</td>
-          <td class="py-4 text-right">${{ (item.rate || 0).toFixed(2) }}</td>
+          <td class="py-4 text-right">${{ Number(item.rate || 0).toFixed(2) }}</td>
           <td class="py-4 text-right">${{ getLineAmount(item).toFixed(2) }}</td>
         </tr>
       </tbody>
@@ -665,7 +736,7 @@ const clientProjects = computed(() => {
         </div>
         <div class="flex justify-between py-4 font-headline-sm text-headline-sm text-[#C9A84C]">
           <span>Total Due</span>
-          <span>${{ total.toFixed(2) }}</span>
+          <span><span class="mr-0.5 font-body-md font-medium tracking-normal text-[0.8em] relative -top-[0.05em]">$</span>{{ total.toFixed(2) }}</span>
         </div>
       </div>
     </div>
@@ -733,16 +804,46 @@ const clientProjects = computed(() => {
 }
 
 @media print {
-  body {
+  /* Reset viewport and wrap layout elements for proper print flow */
+  html, body, #app, .min-h-screen, main, .flex-grow, .flex-1 {
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    position: static !important;
     background: white !important;
-    color: black !important;
+    box-shadow: none !important;
   }
-  .no-print {
+
+  /* Hide non-printable elements using display:none to prevent blank pages */
+  .no-print,
+  .no-print * {
     display: none !important;
   }
-  .invoice-preview-panel {
+
+  /* Hide the editor and live preview sections */
+  section {
+    display: none !important;
+  }
+
+  /* Reset the container wrapper */
+  .h-\[calc\(100vh-80px\)\] {
+    height: auto !important;
+    overflow: visible !important;
+    display: block !important;
+    margin: 0 !important;
+  }
+
+  /* Ensure the printable invoice flows naturally without absolute positioning constraints */
+  .print-only-invoice {
+    display: block !important;
     position: static !important;
     width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 40px !important;
+    box-shadow: none !important;
+    background: white !important;
+    color: #0A0A0F !important;
   }
 }
 </style>

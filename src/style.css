@@ -151,3 +151,13 @@ body {
 .input-minimal::placeholder {
     color: #47464b;
 }
+
+/* Hide browser default number input spinners for clean premium aesthetic */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type=number] {
+  -moz-appearance: textfield;
+}

@@ -76,6 +76,32 @@ export const useClientsStore = defineStore('clients', {
       }
     },
 
+    async updateClient(clientId, { name, company, email }) {
+      this.loading = true
+      this.error = null
+      try {
+        const { data, error } = await supabase
+          .from('clients')
+          .update({ name, company, email })
+          .eq('id', clientId)
+          .select()
+          .single()
+        if (error) throw error
+
+        const idx = this.clients.findIndex(c => c.id === clientId)
+        if (idx !== -1) {
+          this.clients[idx] = { ...this.clients[idx], ...data }
+        }
+        return data
+      } catch (err) {
+        this.error = err.message
+        console.error('Error updating client:', err)
+        throw err
+      } finally {
+        this.loading = false
+      }
+    },
+
     async deleteClient(clientId) {
       this.loading = true
       this.error = null
