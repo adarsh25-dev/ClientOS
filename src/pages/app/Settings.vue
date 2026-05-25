@@ -1,11 +1,13 @@
 <script setup>
 import { ref, reactive, onMounted, computed, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../composables/useAuth'
 import { useToast } from '../../composables/useToast'
 
 const { profile, fetchProfile } = useAuth()
 const toast = useToast()
+const route = useRoute()
 
 // Tabs configuration
 const activeTab = ref('profile') // 'profile' | 'keys' | 'notifications' | 'portal' | 'account'
@@ -227,6 +229,10 @@ const handleDeleteAccount = async () => {
 
 // Pre-populate settings on mount
 onMounted(() => {
+  if (route.query.tab) {
+    activeTab.value = route.query.tab
+  }
+  
   if (profile.value) {
     profileForm.fullName = profile.value.full_name || ''
     profileForm.agencyName = profile.value.agency_name || ''

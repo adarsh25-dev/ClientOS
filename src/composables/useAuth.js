@@ -20,6 +20,7 @@ export function useAuth() {
     signUp: store.signUp,
     signOut: store.signOut,
     signInWithGoogle: store.signInWithGoogle,
+    sendPasswordResetEmail: store.sendPasswordResetEmail,
     fetchProfile: store.fetchProfile
   }
 }

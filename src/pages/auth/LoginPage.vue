@@ -3,7 +3,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '../../composables/useAuth'
 
-const { signIn, signInWithGoogle, loading, error } = useAuth()
+const { signIn, signInWithGoogle, sendPasswordResetEmail, loading, error } = useAuth()
 const router = useRouter()
 
 // Refs
@@ -15,6 +15,12 @@ const emailError = ref('')
 const passwordError = ref('')
 const formSubmitted = ref(false)
 const isLoaded = ref(false)
+
+// Reset password states
+const isResetMode = ref(false)
+const resetSent = ref(false)
+const resetError = ref('')
+const resetLoading = ref(false)
 
 const validateForm = () => {
   let isValid = true
@@ -55,6 +61,30 @@ const handleSubmit = async () => {
     router.push('/app/dashboard')
   } catch (err) {
     console.error('Login failed:', err)
+  }
+}
+
+const handleResetPassword = async () => {
+  emailError.value = ''
+  resetError.value = ''
+  
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!email.value) {
+    emailError.value = 'Email is required to reset password'
+    return
+  } else if (!emailRegex.test(email.value)) {
+    emailError.value = 'Please enter a valid email address'
+    return
+  }
+
+  resetLoading.value = true
+  try {
+    await sendPasswordResetEmail(email.value)
+    resetSent.value = true
+  } catch (err) {
+    resetError.value = err || 'Failed to send reset email. Please try again.'
+  } finally {
+    resetLoading.value = false
   }
 }
 
@@ -136,17 +166,36 @@ onMounted(() => {
         
         <!-- Header -->
         <div class="stagger-item anim-fade-up">
-          <h2 class="font-headline-lg text-headline-lg text-on-surface mb-2">Welcome back</h2>
-          <p class="font-body-md text-body-md text-on-surface-variant">Enter your details to access your workspace.</p>
+          <h2 class="font-headline-lg text-headline-lg text-on-surface mb-2">
+            {{ isResetMode ? (resetSent ? 'Check your inbox' : 'Reset Password') : 'Welcome back' }}
+          </h2>
+          <p class="font-body-md text-body-md text-on-surface-variant">
+            {{ isResetMode ? (resetSent ? `We've sent a recovery link to ${email}.` : 'Enter your email to receive a password reset link.') : 'Enter your details to access your workspace.' }}
+          </p>
         </div>
 
         <!-- Custom Error Notification -->
-        <div v-if="error" class="bg-error-container/10 border border-error-container/20 text-error p-4 rounded-sm text-sm text-left stagger-item anim-fade-up" style="transition-delay: 40ms;">
-          {{ error }}
+        <div v-if="error || resetError" class="bg-error-container/10 border border-error-container/20 text-error p-4 rounded-sm text-sm text-left stagger-item anim-fade-up" style="transition-delay: 40ms;">
+          {{ error || resetError }}
+        </div>
+
+        <!-- Success State -->
+        <div v-if="isResetMode && resetSent" class="flex flex-col gap-6 w-full stagger-item anim-fade-up">
+          <p class="font-body-md text-body-md text-on-surface-variant text-left leading-relaxed">
+            Click the link in the email to sign in and choose a new password. If you don't receive it within a few minutes, check your spam folder.
+          </p>
+          <button
+            type="button"
+            @click="isResetMode = false; resetSent = false; email = ''"
+            class="w-full bg-surface-bright hover:bg-surface-variant text-on-surface font-label-sm text-label-sm uppercase tracking-widest py-4 rounded-[2px] transition-all duration-300 flex items-center justify-center gap-2 group"
+          >
+            Back to Login
+            <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+          </button>
         </div>
 
         <!-- Form -->
-        <form class="flex flex-col gap-8 w-full" @submit.prevent="handleSubmit">
+        <form v-else class="flex flex-col gap-8 w-full" @submit.prevent="isResetMode ? handleResetPassword() : handleSubmit()">
           <div class="flex flex-col gap-6">
             <!-- Email -->
             <div class="input-focus-border stagger-item anim-fade-up" style="transition-delay: 80ms;">
@@ -156,11 +205,11 @@ onMounted(() => {
                 placeholder="Email address"
                 class="w-full bg-transparent border-0 border-b border-outline pb-3 font-body-lg text-body-lg text-on-surface placeholder-on-surface-variant focus:ring-0 px-0 transition-colors input-minimal"
               />
-              <span v-if="emailError && formSubmitted" class="text-xs text-error mt-1 block">{{ emailError }}</span>
+              <span v-if="emailError && (formSubmitted || isResetMode)" class="text-xs text-error mt-1 block">{{ emailError }}</span>
             </div>
 
             <!-- Password -->
-            <div class="input-focus-border stagger-item anim-fade-up" style="transition-delay: 160ms;">
+            <div v-if="!isResetMode" class="input-focus-border stagger-item anim-fade-up" style="transition-delay: 160ms;">
               <input
                 v-model="password"
                 type="password"
@@ -172,7 +221,7 @@ onMounted(() => {
           </div>
 
           <!-- Remember me / Forgot -->
-          <div class="flex items-center justify-between stagger-item anim-fade-up" style="transition-delay: 240ms;">
+          <div v-if="!isResetMode" class="flex items-center justify-between stagger-item anim-fade-up" style="transition-delay: 240ms;">
             <label class="flex items-center gap-3 cursor-pointer group">
               <div class="relative flex items-center justify-center w-5 h-5 border border-outline rounded-[2px] group-hover:border-primary-container transition-colors">
                 <input v-model="rememberMe" type="checkbox" class="peer sr-only" />
@@ -182,18 +231,18 @@ onMounted(() => {
               </div>
               <span class="font-body-md text-body-md text-on-surface-variant group-hover:text-on-surface transition-colors">Remember me</span>
             </label>
-            <a href="#" @click.prevent="" class="font-label-sm text-label-sm text-primary hover:text-primary-fixed transition-colors uppercase">Reset Password</a>
+            <a href="#" @click.prevent="isResetMode = true; emailError = ''" class="font-label-sm text-label-sm text-primary hover:text-primary-fixed transition-colors uppercase">Reset Password</a>
           </div>
 
           <!-- Actions -->
           <div class="flex flex-col gap-4 mt-2">
             <button
               type="submit"
-              :disabled="loading"
+              :disabled="loading || resetLoading"
               class="w-full bg-surface-bright hover:bg-surface-variant text-on-surface font-label-sm text-label-sm uppercase tracking-widest py-4 rounded-[2px] transition-all duration-300 stagger-item anim-fade-up flex items-center justify-center gap-2 group disabled:opacity-50"
               style="transition-delay: 320ms;"
             >
-              <template v-if="loading">
+              <template v-if="loading || resetLoading">
                 <span class="flex gap-1">
                   <span class="w-1.5 h-1.5 bg-on-surface rounded-full animate-bounce"></span>
                   <span class="w-1.5 h-1.5 bg-on-surface rounded-full animate-bounce [animation-delay:0.2s]"></span>
@@ -201,13 +250,24 @@ onMounted(() => {
                 </span>
               </template>
               <template v-else>
-                Continue
+                {{ isResetMode ? 'Send reset link' : 'Continue' }}
                 <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
               </template>
             </button>
 
+            <!-- Back to Login Link for reset mode -->
+            <button
+              v-if="isResetMode"
+              type="button"
+              @click="isResetMode = false; resetSent = false; resetError = ''; emailError = ''"
+              class="w-full border border-outline hover:border-outline-variant hover:bg-surface-container-lowest text-on-surface font-label-sm text-label-sm uppercase tracking-widest py-4 rounded-[2px] transition-all duration-300 flex items-center justify-center gap-2"
+            >
+              Back to Login
+              <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+            </button>
+
             <!-- Separator -->
-            <div class="relative flex items-center py-2 stagger-item anim-fade-up" style="transition-delay: 400ms;">
+            <div v-if="!isResetMode" class="relative flex items-center py-2 stagger-item anim-fade-up" style="transition-delay: 400ms;">
               <div class="flex-grow border-t border-outline"></div>
               <span class="flex-shrink-0 mx-4 font-body-md text-body-md text-on-surface-variant text-sm">or</span>
               <div class="flex-grow border-t border-outline"></div>
@@ -215,6 +275,7 @@ onMounted(() => {
 
             <!-- Google OAuth -->
             <button
+              v-if="!isResetMode"
               @click="handleGoogleSignIn"
               type="button"
               class="w-full border border-outline hover:border-outline-variant hover:bg-surface-container-lowest text-on-surface font-label-sm text-label-sm uppercase tracking-widest py-4 rounded-[2px] transition-all duration-300 stagger-item anim-fade-up flex items-center justify-center gap-3"
@@ -232,7 +293,7 @@ onMounted(() => {
         </form>
 
         <!-- Redirect to Sign up -->
-        <div class="text-center mt-6 stagger-item anim-fade-up" style="transition-delay: 560ms;">
+        <div v-if="!isResetMode" class="text-center mt-6 stagger-item anim-fade-up" style="transition-delay: 560ms;">
           <p class="font-body-md text-body-md text-on-surface-variant">
             Don't have an account? 
             <router-link to="/signup" class="text-primary hover:text-primary-container transition-colors ml-1 font-medium border-b border-transparent hover:border-primary pb-0.5">Start free</router-link>
