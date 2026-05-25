@@ -106,6 +106,28 @@ const handleFileSelect = (e) => {
   }
 }
 
+const extractFileText = async (file) => {
+  if (file.type === 'application/pdf') {
+    try {
+      const arrayBuffer = await file.arrayBuffer()
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise
+      let text = ''
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i)
+        const content = await page.getTextContent()
+        text += content.items.map(item => item.str).join(' ') + ' '
+      }
+      return text
+    } catch (err) {
+      console.warn('PDF extraction failed:', err)
+      return ''
+    }
+  } else if (file.type.startsWith('text/') || file.name.endsWith('.csv') || file.name.endsWith('.md')) {
+    return await file.text()
+  }
+  return ''
+}
+
 const processFiles = async (fileList) => {
   for (let i = 0; i < fileList.length; i++) {
     const file = fileList[i]
