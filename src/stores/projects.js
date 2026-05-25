@@ -37,7 +37,7 @@ export const useProjectsStore = defineStore('projects', {
       this.loading = true
       this.error = null
       try {
-        // Fetch project
+        // Fetch project first as we need client_id
         const { data: project, error: projectError } = await supabase
           .from('projects')
           .select('*')
@@ -46,50 +46,35 @@ export const useProjectsStore = defineStore('projects', {
         if (projectError) throw projectError
         this.currentProject = project
 
-        // Fetch client
-        const { data: client, error: clientError } = await supabase
-          .from('clients')
-          .select('*')
-          .eq('id', project.client_id)
-          .single()
-        if (clientError) throw clientError
-        this.currentClient = client
+        // Now fetch everything else concurrently
+        const [
+          clientRes,
+          milestonesRes,
+          filesRes,
+          updatesRes,
+          feedbackRes
+        ] = await Promise.all([
+          supabase.from('clients').select('*').eq('id', project.client_id).single(),
+          supabase.from('milestones').select('*').eq('project_id', projectId).order('order_index', { ascending: true }),
+          supabase.from('files').select('*').eq('project_id', projectId).order('uploaded_at', { ascending: false }),
+          supabase.from('updates').select('*').eq('project_id', projectId).order('created_at', { ascending: false }),
+          supabase.from('feedback').select('*').eq('project_id', projectId).order('created_at', { ascending: true })
+        ])
 
-        // Fetch milestones
-        const { data: milestones, error: milestonesError } = await supabase
-          .from('milestones')
-          .select('*')
-          .eq('project_id', projectId)
-          .order('order_index', { ascending: true })
-        if (milestonesError) throw milestonesError
-        this.milestones = milestones
+        if (clientRes.error) throw clientRes.error
+        this.currentClient = clientRes.data
 
-        // Fetch files
-        const { data: files, error: filesError } = await supabase
-          .from('files')
-          .select('*')
-          .eq('project_id', projectId)
-          .order('uploaded_at', { ascending: false })
-        if (filesError) throw filesError
-        this.files = files
+        if (milestonesRes.error) throw milestonesRes.error
+        this.milestones = milestonesRes.data
 
-        // Fetch updates
-        const { data: updates, error: updatesError } = await supabase
-          .from('updates')
-          .select('*')
-          .eq('project_id', projectId)
-          .order('created_at', { ascending: false })
-        if (updatesError) throw updatesError
-        this.updates = updates
+        if (filesRes.error) throw filesRes.error
+        this.files = filesRes.data
 
-        // Fetch feedback
-        const { data: feedback, error: feedbackError } = await supabase
-          .from('feedback')
-          .select('*')
-          .eq('project_id', projectId)
-          .order('created_at', { ascending: true })
-        if (feedbackError) throw feedbackError
-        this.feedback = feedback
+        if (updatesRes.error) throw updatesRes.error
+        this.updates = updatesRes.data
+
+        if (feedbackRes.error) throw feedbackRes.error
+        this.feedback = feedbackRes.data
       } catch (err) {
         this.error = err.message
         console.error('Error loading project detail:', err)

@@ -53,8 +53,10 @@ const portalUrl = computed(() => {
 const fetchProjectDetails = async () => {
   loading.value = true
   try {
-    await projectsStore.fetchProjectDetail(projectId)
-    await fetchProjectInvoices()
+    await Promise.all([
+      projectsStore.fetchProjectDetail(projectId),
+      fetchProjectInvoices()
+    ])
   } catch (err) {
     toast.error('Failed to load project details: ' + err.message)
     router.push('/app/projects')

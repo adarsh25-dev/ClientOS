@@ -51,17 +51,18 @@ export const usePortalStore = defineStore('portal', {
         if (projectsError) throw projectsError
         this.projects = projects || []
 
+        const promises = [
+          supabase.from('invoices').select('*').eq('client_id', client.id)
+        ]
+
         if (this.projects.length > 0) {
-          await this.setActiveProject(this.projects[0].id)
+          promises.push(this.setActiveProject(this.projects[0].id))
         }
 
-        // 4. Load invoices
-        const { data: invoices, error: invoicesError } = await supabase
-          .from('invoices')
-          .select('*')
-          .eq('client_id', client.id)
-        if (invoicesError) throw invoicesError
-        this.invoices = invoices || []
+        const [invoicesRes] = await Promise.all(promises)
+
+        if (invoicesRes.error) throw invoicesRes.error
+        this.invoices = invoicesRes.data || []
       } catch (err) {
         this.error = err.message
         console.error('Error initializing portal:', err)
@@ -77,41 +78,29 @@ export const usePortalStore = defineStore('portal', {
       this.activeProject = proj
 
       try {
-        // Fetch milestones
-        const { data: milestones, error: milestonesError } = await supabase
-          .from('milestones')
-          .select('*')
-          .eq('project_id', projectId)
-          .order('order_index', { ascending: true })
-        if (milestonesError) throw milestonesError
-        this.milestones = milestones || []
+        const [
+          milestonesRes,
+          updatesRes,
+          filesRes,
+          feedbackRes
+        ] = await Promise.all([
+          supabase.from('milestones').select('*').eq('project_id', projectId).order('order_index', { ascending: true }),
+          supabase.from('updates').select('*').eq('project_id', projectId).order('created_at', { ascending: false }),
+          supabase.from('files').select('*').eq('project_id', projectId).order('uploaded_at', { ascending: false }),
+          supabase.from('feedback').select('*').eq('project_id', projectId).order('created_at', { ascending: true })
+        ])
 
-        // Fetch updates
-        const { data: updates, error: updatesError } = await supabase
-          .from('updates')
-          .select('*')
-          .eq('project_id', projectId)
-          .order('created_at', { ascending: false })
-        if (updatesError) throw updatesError
-        this.updates = updates || []
+        if (milestonesRes.error) throw milestonesRes.error
+        this.milestones = milestonesRes.data || []
 
-        // Fetch files
-        const { data: files, error: filesError } = await supabase
-          .from('files')
-          .select('*')
-          .eq('project_id', projectId)
-          .order('uploaded_at', { ascending: false })
-        if (filesError) throw filesError
-        this.files = files || []
+        if (updatesRes.error) throw updatesRes.error
+        this.updates = updatesRes.data || []
 
-        // Fetch feedback
-        const { data: feedback, error: feedbackError } = await supabase
-          .from('feedback')
-          .select('*')
-          .eq('project_id', projectId)
-          .order('created_at', { ascending: true })
-        if (feedbackError) throw feedbackError
-        this.feedback = feedback || []
+        if (filesRes.error) throw filesRes.error
+        this.files = filesRes.data || []
+
+        if (feedbackRes.error) throw feedbackRes.error
+        this.feedback = feedbackRes.data || []
       } catch (err) {
         console.error('Error fetching project portal data:', err)
       }
