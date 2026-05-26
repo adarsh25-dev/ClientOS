@@ -21,6 +21,8 @@ const fileInput = ref(null)
 // State
 const loading = ref(false)
 const saving = ref(false)
+const scanning = ref(false)
+const autoWriting = ref(false)
 const editMode = ref(false)
 const invoiceId = ref(null)
 const isSendSuccessOpen = ref(false)
@@ -141,6 +143,7 @@ const handleImageUpload = async (event) => {
     const reader = new FileReader()
     reader.onload = async (e) => {
       const dataUrl = e.target.result
+      scanning.value = true
       try {
         const extractedItems = await ai.extractInvoiceItems(dataUrl)
         if (extractedItems && extractedItems.length > 0) {
@@ -166,6 +169,8 @@ const handleImageUpload = async (event) => {
         }
       } catch (err) {
         toast.error('AI Scan failed: ' + err)
+      } finally {
+        scanning.value = false
       }
     }
     reader.readAsDataURL(file)
@@ -177,6 +182,7 @@ const handleImageUpload = async (event) => {
 }
 
 const handleAutoWriteNotes = async () => {
+  autoWriting.value = true
   try {
     const clientName = selectedClient.value?.name || ''
     const notes = await ai.generateInvoiceNotes(clientName, form.lineItems)
@@ -187,6 +193,8 @@ const handleAutoWriteNotes = async () => {
     }
   } catch (err) {
     toast.error('Failed to auto-write notes: ' + (err.message || err))
+  } finally {
+    autoWriting.value = false
   }
 }
 
@@ -484,13 +492,13 @@ const clientProjects = computed(() => {
           
           <button
             @click="fileInput.click()"
-            :disabled="ai.loading.value"
+            :disabled="scanning"
             class="flex items-center gap-2 text-tertiary hover-cinematic font-label-caps text-label-caps uppercase border border-tertiary/30 hover:border-tertiary bg-tertiary/5 px-6 py-3 disabled:opacity-50"
           >
-            <span class="material-symbols-outlined text-[18px]" :class="{ 'animate-spin': ai.loading.value }">
-              {{ ai.loading.value ? 'autorenew' : 'document_scanner' }}
+            <span class="material-symbols-outlined text-[18px]" :class="{ 'animate-spin': scanning }">
+              {{ scanning ? 'autorenew' : 'document_scanner' }}
             </span> 
-            {{ ai.loading.value ? 'Scanning...' : 'AI Scan Document' }}
+            {{ scanning ? 'Scanning...' : 'AI Scan Document' }}
           </button>
           <input 
             type="file" 
@@ -509,12 +517,12 @@ const clientProjects = computed(() => {
             <h2 class="font-label-caps text-label-caps text-tertiary uppercase tracking-widest">Notes</h2>
             <button
               @click="handleAutoWriteNotes"
-              :disabled="ai.loading.value"
+              :disabled="autoWriting"
               class="text-[10px] uppercase font-bold tracking-wider text-tertiary hover:text-tertiary-fixed transition-colors flex items-center gap-1 disabled:opacity-50"
               title="AI will draft a polite note based on the line items"
             >
-              <span class="material-symbols-outlined text-[14px]" :class="{ 'animate-spin': ai.loading.value }">
-                {{ ai.loading.value ? 'autorenew' : 'auto_awesome' }}
+              <span class="material-symbols-outlined text-[14px]" :class="{ 'animate-spin': autoWriting }">
+                {{ autoWriting ? 'autorenew' : 'auto_awesome' }}
               </span>
               Auto-write
             </button>
