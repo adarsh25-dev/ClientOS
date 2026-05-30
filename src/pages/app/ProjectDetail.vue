@@ -210,7 +210,7 @@ onMounted(() => {
       </div>
 
       <!-- Project actions (Status & AI Update) -->
-      <div class="flex items-center gap-3">
+      <div class="flex flex-wrap items-center gap-3">
         <!-- Status Select -->
         <select
           :value="project?.status"
@@ -226,7 +226,7 @@ onMounted(() => {
         <!-- Generate Update -->
         <button
           @click="isAIModalOpen = true"
-          class="bg-primary hover:bg-primary-container text-on-primary font-button text-xs uppercase tracking-widest py-2.5 px-4 rounded-sm transition-colors flex items-center gap-1.5"
+          class="btn-accent text-[#0A0A0F] font-button text-xs uppercase tracking-widest py-2.5 px-4 rounded-sm transition-colors flex items-center gap-1.5"
         >
           <span class="material-symbols-outlined text-sm">auto_awesome</span>
           Generate AI Update
@@ -235,7 +235,7 @@ onMounted(() => {
     </div>
 
     <!-- Tabs Menu -->
-    <div class="flex border-b border-custom-border/60 gap-6">
+    <div class="flex overflow-x-auto whitespace-nowrap border-b border-custom-border/60 gap-6 custom-scrollbar pb-1">
       <button
         v-for="t in ['overview', 'files', 'invoices', 'feedback']"
         :key="t"
@@ -263,17 +263,56 @@ onMounted(() => {
           
           <!-- Milestone timeline -->
           <div class="bg-custom-bg-card border border-custom-border p-6 rounded-sm">
-            <div class="flex justify-between items-center mb-6">
+            <!-- Header -->
+            <div class="flex justify-between items-center mb-5">
               <h4 class="font-headline-sm text-sm uppercase tracking-widest text-on-surface">Project Milestones</h4>
-              <span class="text-[10px] text-custom-muted uppercase tracking-wider font-semibold">Drag to Reorder</span>
+              <button
+                @click="isAddMilestoneOpen = !isAddMilestoneOpen"
+                class="flex items-center gap-1.5 px-3 py-1.5 border border-dashed border-custom-muted hover:border-primary text-custom-muted hover:text-primary text-[10px] font-button uppercase tracking-wider rounded-sm transition-all"
+              >
+                <span class="material-symbols-outlined text-sm">add</span>
+                Add Milestone
+              </button>
             </div>
 
-            <!-- Horizontal line container -->
-            <div class="flex items-center gap-4 py-8 overflow-x-auto min-h-[140px] relative">
-              <!-- Background gray timeline path line -->
-              <div class="absolute left-6 right-6 top-[55px] h-[1px] bg-custom-border z-0"></div>
+            <!-- Add Milestone Inline Form -->
+            <div v-if="isAddMilestoneOpen" class="mb-4 p-4 bg-custom-bg-sidebar/40 border border-primary/20 rounded-sm flex flex-col sm:flex-row gap-3 items-end">
+              <div class="flex flex-col gap-1 flex-1">
+                <label class="text-[9px] uppercase tracking-widest text-custom-muted font-bold">Title</label>
+                <input
+                  v-model="newMilestoneTitle"
+                  type="text"
+                  placeholder="e.g. Design Mockups"
+                  class="bg-custom-bg-card border border-custom-border rounded-sm px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary"
+                />
+              </div>
+              <div class="flex flex-col gap-1">
+                <label class="text-[9px] uppercase tracking-widest text-custom-muted font-bold">Due Date</label>
+                <input
+                  v-model="newMilestoneDueDate"
+                  type="date"
+                  class="bg-custom-bg-card border border-custom-border rounded-sm px-3 py-2 text-xs text-on-surface-variant focus:outline-none focus:border-primary"
+                />
+              </div>
+              <div class="flex gap-2">
+                <button @click="isAddMilestoneOpen = false" class="px-3 py-2 text-[10px] border border-custom-border text-on-surface-variant rounded-sm font-button uppercase transition-colors hover:bg-custom-hover">Cancel</button>
+                <button @click="handleAddMilestone" class="px-4 py-2 text-[10px] btn-accent text-[#0A0A0F] rounded-sm font-button uppercase">Save</button>
+              </div>
+            </div>
 
-              <!-- Milestone Nodes -->
+            <!-- Empty State -->
+            <div v-if="milestones.length === 0" class="py-8 text-center flex flex-col items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-custom-hover border border-custom-border flex items-center justify-center">
+                <span class="material-symbols-outlined text-custom-muted text-base">flag</span>
+              </div>
+              <p class="text-xs text-custom-muted">No milestones yet. Add one to track project progress.</p>
+            </div>
+
+            <!-- Milestones List (vertical timeline) -->
+            <div v-else class="flex flex-col relative">
+              <!-- Vertical line -->
+              <div class="absolute left-[11px] top-3 bottom-3 w-[1px] bg-custom-border z-0"></div>
+
               <div
                 v-for="(m, idx) in milestones"
                 :key="m.id"
@@ -282,87 +321,69 @@ onMounted(() => {
                 @dragover="handleDragOver"
                 @drop="handleDrop(idx)"
                 @click="handleMilestoneClick(m)"
-                class="flex flex-col items-center shrink-0 w-32 cursor-pointer z-10 select-none relative group"
+                class="flex items-start gap-4 py-3 cursor-pointer group relative z-10"
+                :class="{ 'opacity-60 scale-[0.98]': dragStartIdx === idx }"
               >
-                <!-- Title tooltip on hover -->
-                <div class="absolute bottom-16 bg-custom-hover border border-custom-border text-[10px] text-on-surface px-2.5 py-1.5 rounded-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-lg pointer-events-none">
-                  {{ m.title }}
-                </div>
-
-                <!-- Animated node indicator -->
+                <!-- Status Node -->
                 <div
-                  class="w-6 h-6 rounded-full border-[2px] bg-custom-bg-card flex items-center justify-center transition-all duration-300 relative"
+                  class="mt-0.5 w-[22px] h-[22px] shrink-0 rounded-full border-[2px] flex items-center justify-center transition-all duration-200"
                   :class="m.status === 'completed'
                     ? 'border-primary bg-primary'
                     : m.status === 'in_progress'
-                      ? 'border-primary scale-110 shadow-[0_0_0_4px_rgba(201,168,76,0.15)]'
-                      : 'border-custom-border'"
+                      ? 'border-primary bg-custom-bg-card ring-4 ring-primary/10'
+                      : 'border-custom-border bg-custom-bg-card'"
                 >
-                  <!-- Inner checkmark or dot -->
-                  <span v-if="m.status === 'completed'" class="material-symbols-outlined text-xs text-on-primary font-bold">check</span>
-                  <span v-else-if="m.status === 'in_progress'" class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                  <span v-if="m.status === 'completed'" class="material-symbols-outlined text-[12px] text-on-primary font-bold leading-none">check</span>
+                  <span v-else-if="m.status === 'in_progress'" class="w-2 h-2 rounded-full bg-primary animate-pulse block"></span>
                 </div>
 
-                <!-- Label Title -->
-                <span class="text-xs font-button text-on-surface truncate max-w-[110px] mt-3 font-semibold">{{ m.title }}</span>
-                <!-- Due date -->
-                <span class="text-[10px] text-custom-muted mt-1">{{ formatDate(m.due_date) || 'TBD' }}</span>
-              </div>
-
-              <!-- Inline "+ Add milestone" trigger -->
-              <div class="relative shrink-0 w-32 flex flex-col items-center justify-center">
-                <button
-                  @click="isAddMilestoneOpen = !isAddMilestoneOpen"
-                  class="w-6 h-6 rounded-full border border-dashed border-custom-muted hover:border-primary flex items-center justify-center text-custom-muted hover:text-primary transition-colors"
-                >
-                  <span class="material-symbols-outlined text-sm">add</span>
-                </button>
-                <span class="text-[10px] text-custom-muted mt-3 uppercase tracking-wider font-semibold">New</span>
-
-                <!-- Add popover -->
-                <div
-                  v-if="isAddMilestoneOpen"
-                  class="absolute top-16 bg-custom-hover border border-custom-border p-4 rounded-sm shadow-xl w-48 z-30 flex flex-col gap-3"
-                >
-                  <input
-                    v-model="newMilestoneTitle"
-                    type="text"
-                    placeholder="Milestone Title"
-                    class="bg-custom-bg-card border border-custom-border rounded-sm p-2 text-xs text-on-surface focus:outline-none focus:border-primary"
-                  />
-                  <input
-                    v-model="newMilestoneDueDate"
-                    type="date"
-                    class="bg-custom-bg-card border border-custom-border rounded-sm p-2 text-xs text-on-surface focus:outline-none focus:border-primary"
-                  />
-                  <div class="flex gap-2">
-                    <button @click="isAddMilestoneOpen = false" class="flex-1 py-1 text-[10px] border border-custom-border text-on-surface-variant rounded-sm font-button uppercase">Cancel</button>
-                    <button @click="handleAddMilestone" class="flex-1 py-1 text-[10px] bg-primary text-on-primary rounded-sm font-button uppercase">Save</button>
+                <!-- Content -->
+                <div class="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-3">
+                  <div class="flex flex-col gap-0.5">
+                    <span
+                      class="text-sm font-semibold font-button transition-colors"
+                      :class="m.status === 'completed' ? 'text-on-surface-variant line-through' : 'text-on-surface group-hover:text-primary'"
+                    >{{ m.title }}</span>
+                    <span class="text-[10px] text-custom-muted">{{ formatDate(m.due_date) || 'No due date' }}</span>
                   </div>
+                  <!-- Status badge -->
+                  <span
+                    class="self-start sm:self-auto shrink-0 px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider rounded-sm border"
+                    :class="m.status === 'completed'
+                      ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                      : m.status === 'in_progress'
+                        ? 'bg-primary/10 text-primary border-primary/20'
+                        : 'bg-custom-hover text-custom-muted border-custom-border'"
+                  >
+                    {{ m.status === 'in_progress' ? 'In Progress' : m.status }}
+                  </span>
                 </div>
+
+                <!-- Drag handle -->
+                <span class="material-symbols-outlined text-sm text-custom-muted opacity-0 group-hover:opacity-100 transition-opacity mt-0.5 shrink-0 cursor-grab">drag_indicator</span>
               </div>
             </div>
 
             <!-- Milestone Inline Editor Details panel -->
-            <div v-if="editingMilestoneId" class="mt-4 p-4 border border-custom-border bg-custom-bg-sidebar/40 rounded-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div v-if="editingMilestoneId" class="mt-4 p-4 border border-primary/20 bg-primary/5 rounded-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <div class="flex flex-col md:flex-row gap-4 items-start md:items-center">
                 <div class="flex flex-col text-left">
-                  <span class="text-[9px] uppercase tracking-widest text-custom-muted font-bold">Edit Milestone</span>
+                  <span class="text-[9px] uppercase tracking-widest text-custom-muted font-bold">Editing</span>
                   <span class="text-xs font-semibold text-on-surface mt-0.5">{{ milestones.find(m => m.id === editingMilestoneId)?.title }}</span>
                 </div>
-                <div class="flex items-center gap-3">
-                  <select v-model="editingMilestoneStatus" class="bg-custom-bg-card border border-custom-border rounded-sm py-1.5 px-2.5 text-xs text-on-surface-variant focus:outline-none">
+                <div class="flex flex-wrap items-center gap-3">
+                  <select v-model="editingMilestoneStatus" class="bg-custom-bg-card border border-custom-border rounded-sm py-1.5 px-2.5 text-xs text-on-surface-variant focus:outline-none focus:border-primary">
                     <option value="pending">Pending</option>
                     <option value="in_progress">In Progress</option>
                     <option value="completed">Completed</option>
                   </select>
-                  <input v-model="editingMilestoneDueDate" type="date" class="bg-custom-bg-card border border-custom-border rounded-sm py-1 px-2 text-xs text-on-surface-variant focus:outline-none" />
+                  <input v-model="editingMilestoneDueDate" type="date" class="bg-custom-bg-card border border-custom-border rounded-sm py-1.5 px-2.5 text-xs text-on-surface-variant focus:outline-none focus:border-primary" />
                 </div>
               </div>
-              <div class="flex gap-2 w-full md:w-auto">
+              <div class="flex flex-wrap gap-2 w-full md:w-auto">
                 <button @click="handleDeleteMilestone(editingMilestoneId)" class="px-3 py-1.5 border border-red-500/20 text-red-400 text-xs font-button rounded-sm uppercase hover:bg-red-500/5 transition-colors">Delete</button>
-                <button @click="editingMilestoneId = null" class="px-3 py-1.5 border border-custom-border text-on-surface-variant text-xs font-button rounded-sm uppercase hover:bg-custom-hover">Cancel</button>
-                <button @click="saveMilestoneEdits" class="px-4 py-1.5 bg-primary text-on-primary text-xs font-button rounded-sm uppercase hover:bg-primary-container transition-colors">Save</button>
+                <button @click="editingMilestoneId = null" class="px-3 py-1.5 border border-custom-border text-on-surface-variant text-xs font-button rounded-sm uppercase hover:bg-custom-hover transition-colors">Cancel</button>
+                <button @click="saveMilestoneEdits" class="px-4 py-1.5 btn-accent text-[#0A0A0F] text-xs font-button rounded-sm uppercase transition-colors">Save</button>
               </div>
             </div>
           </div>
@@ -439,7 +460,7 @@ onMounted(() => {
             v-for="invoice in invoices"
             :key="invoice.id"
             @click="router.push(`/app/invoices/${invoice.id}`)"
-            class="bg-custom-bg-card border border-custom-border p-4 rounded-sm flex items-center justify-between hover:bg-custom-hover transition-colors cursor-pointer"
+            class="bg-custom-bg-card border border-custom-border p-4 rounded-sm flex flex-col sm:flex-row gap-4 sm:items-center justify-between hover:bg-custom-hover transition-colors cursor-pointer"
           >
             <div class="flex items-center gap-4 text-left">
               <div class="w-10 h-10 rounded-full bg-custom-hover border border-custom-border flex items-center justify-center">

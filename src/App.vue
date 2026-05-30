@@ -1,12 +1,28 @@
 <script setup>
+import { watch } from 'vue'
 import { useOnline } from '@vueuse/core'
 import ToastContainer from './components/ui/ToastContainer.vue'
+import { useAuth } from './composables/useAuth'
+import { hexToRgb } from './utils/color'
 
 const isOnline = useOnline()
+const { profile } = useAuth()
+
+// Reactively sync the brand accent color to the document root so ALL
+// CSS classes using var(--color-primary) pick it up everywhere in the DOM.
+watch(
+  () => profile.value?.brand_color,
+  (color) => {
+    const accent = color || '#c9a84c'
+    document.documentElement.style.setProperty('--color-primary', accent)
+    document.documentElement.style.setProperty('--color-primary-rgb', hexToRgb(accent))
+  },
+  { immediate: true }
+)
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col w-full bg-[#0A0A0F]">
+  <div class="min-h-screen flex flex-col w-full bg-custom-bg-main">
     <!-- Offline Banner -->
     <div
       v-if="!isOnline"

@@ -253,7 +253,7 @@ onMounted(() => {
     >
       <!-- Logo header -->
       <div
-        class="flex items-center gap-2.5 text-[#C9A84C] mb-10 justify-center"
+        class="flex items-center gap-2.5 text-primary mb-10 justify-center"
       >
         <span
           class="material-symbols-outlined text-2xl"
@@ -276,7 +276,7 @@ onMounted(() => {
           class="w-2.5 h-2.5 rounded-full border border-[#1E2030] transition-all"
           :class="
             s === currentStep
-              ? 'bg-[#C9A84C] scale-110'
+              ? 'bg-primary scale-110'
               : s < currentStep
                 ? 'bg-[#5A5A70]'
                 : 'bg-[#1A1A25]'
@@ -310,7 +310,7 @@ onMounted(() => {
               >
               <div
                 @click="triggerFileSelect"
-                class="border border-dashed border-[#1E2030] hover:border-[#C9A84C]/40 bg-[#16161F]/40 p-4 rounded-sm flex items-center justify-center gap-4 cursor-pointer transition-colors"
+                class="border border-dashed border-[#1E2030] hover:border-primary/40 bg-[#16161F]/40 p-4 rounded-sm flex items-center justify-center gap-4 cursor-pointer transition-colors"
               >
                 <input
                   ref="fileInput"
@@ -544,7 +544,7 @@ onMounted(() => {
                     >{{ tab }}</span
                   >
                   <div
-                    class="relative flex items-center justify-center w-5 h-5 border border-[#1E2030] rounded-sm hover:border-[#C9A84C] transition-colors"
+                    class="relative flex items-center justify-center w-5 h-5 border border-[#1E2030] rounded-sm hover:border-primary transition-colors"
                   >
                     <input
                       v-model="form.tabs[tab]"
@@ -552,7 +552,7 @@ onMounted(() => {
                       class="peer sr-only"
                     />
                     <div
-                      class="absolute inset-0 bg-[#C9A84C] opacity-0 peer-checked:opacity-100 transition-opacity flex items-center justify-center rounded-sm"
+                      class="absolute inset-0 bg-primary opacity-0 peer-checked:opacity-100 transition-opacity flex items-center justify-center rounded-sm"
                     >
                       <span
                         class="material-symbols-outlined text-[14px] text-[#0A0A0F] font-bold"
@@ -575,7 +575,7 @@ onMounted(() => {
               <button
                 @click="saveOnboarding"
                 :disabled="!isStepValid() || saving"
-                class="flex-1 bg-[#C9A84C] hover:bg-[#8A7030] text-[#0A0A0F] font-display text-xs uppercase tracking-widest py-3.5 rounded-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                class="flex-1 btn-accent text-[#0A0A0F] font-display text-xs uppercase tracking-widest py-3.5 rounded-sm flex items-center justify-center gap-2 disabled:opacity-50"
               >
                 <template v-if="saving">
                   <span
@@ -601,10 +601,10 @@ onMounted(() => {
           >
             <!-- Animated SVG Circle/Icon Reveal -->
             <div
-              class="w-20 h-20 rounded-full border border-[#C9A84C]/25 flex items-center justify-center relative overflow-hidden bg-[#C9A84C]/5"
+              class="w-20 h-20 rounded-full border border-primary/25 flex items-center justify-center relative overflow-hidden bg-primary/5"
             >
               <span
-                class="material-symbols-outlined text-4xl text-[#C9A84C] animate-pulse"
+                class="material-symbols-outlined text-4xl text-primary animate-pulse"
                 >celebration</span
               >
             </div>
@@ -623,7 +623,7 @@ onMounted(() => {
 
             <button
               @click="router.push('/app/dashboard')"
-              class="w-full bg-[#C9A84C] hover:bg-[#8A7030] text-[#0A0A0F] font-display text-xs uppercase tracking-widest py-3.5 rounded-sm transition-all mt-4"
+              class="w-full btn-accent text-[#0A0A0F] font-display text-xs uppercase tracking-widest py-3.5 rounded-sm mt-4"
             >
               Go to Dashboard
             </button>

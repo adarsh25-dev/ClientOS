@@ -74,10 +74,10 @@ onMounted(() => {
           :key="invoice.id"
           @click="selectInvoice(invoice)"
           class="bg-[#16161F] border rounded-sm p-4 text-left cursor-pointer transition-all hover:bg-[#1A1A25]"
-          :class="selectedInvoice?.id === invoice.id ? 'border-[#C9A84C]' : 'border-[#1E2030]'"
+          :class="selectedInvoice?.id === invoice.id ? 'border-primary' : 'border-[#1E2030]'"
         >
           <div class="flex justify-between items-center mb-2">
-            <span class="text-xs font-semibold font-mono text-[#C9A84C]">{{ invoice.invoice_number }}</span>
+            <span class="text-xs font-semibold font-mono text-primary">{{ invoice.invoice_number }}</span>
             <span 
               class="px-2 py-0.5 text-[9px] uppercase font-bold tracking-wider rounded border"
               :class="invoice.status === 'paid' 
@@ -103,13 +103,13 @@ onMounted(() => {
             <button
               v-if="selectedInvoice.status !== 'paid'"
               @click="handlePayInvoice(selectedInvoice)"
-              class="bg-[#C9A84C] hover:bg-[#8A7030] text-[#0A0A0F] font-button text-[10px] uppercase tracking-widest py-2 px-4 rounded-sm transition-colors"
+              class="btn-accent text-[#0A0A0F] font-button text-[10px] uppercase tracking-widest py-2 px-4 rounded-sm"
             >
               Pay Invoice
             </button>
             <button
               @click="handlePrint"
-              class="text-xs font-button uppercase tracking-widest text-[#C9A84C] hover:underline underline-offset-4 flex items-center gap-1.5"
+              class="text-xs font-button uppercase tracking-widest text-primary hover:underline underline-offset-4 flex items-center gap-1.5"
             >
               <span class="material-symbols-outlined text-sm">print</span>
               Print Invoice
@@ -132,13 +132,13 @@ onMounted(() => {
           </div>
 
           <!-- Billing Info splits -->
-          <div class="grid grid-cols-2 gap-4 text-xs">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
             <div>
               <h4 class="font-bold text-gray-900 mb-1">Billed To</h4>
               <p class="text-gray-600 font-medium">{{ client?.name }}</p>
               <p class="text-gray-500">{{ client?.company }}</p>
             </div>
-            <div class="text-right">
+            <div class="sm:text-right">
               <h4 class="font-bold text-gray-900 mb-1">Details</h4>
               <p class="text-gray-600">Issue Date: <span class="font-mono">{{ formatDate(selectedInvoice.created_at) }}</span></p>
               <p class="text-gray-600">Due Date: <span class="font-mono">{{ formatDate(selectedInvoice.due_date) }}</span></p>
@@ -151,7 +151,8 @@ onMounted(() => {
           </div>
 
           <!-- Items list -->
-          <table class="w-full text-left text-xs border-collapse">
+          <div class="overflow-x-auto custom-scrollbar pb-2">
+            <table class="w-full text-left text-xs border-collapse min-w-[300px]">
             <thead>
               <tr class="border-b border-gray-200 text-gray-500 font-semibold">
                 <th class="py-2">Description</th>
@@ -168,7 +169,8 @@ onMounted(() => {
                 <td class="py-2.5 text-right font-mono">${{ getLineAmount(item).toFixed(2) }}</td>
               </tr>
             </tbody>
-          </table>
+            </table>
+          </div>
 
           <!-- Totals block -->
           <div class="w-48 ml-auto flex flex-col gap-2 text-xs border-t border-gray-200 pt-4">

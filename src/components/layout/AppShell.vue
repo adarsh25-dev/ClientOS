@@ -4,10 +4,12 @@ import { useRouter, useRoute } from 'vue-router'
 import { useAuth } from '../../composables/useAuth'
 import { useClientsStore } from '../../stores/clients'
 import { useProjectsStore } from '../../stores/projects'
+import { useTheme } from '../../composables/useTheme'
 
 const { profile, signOut } = useAuth()
 const router = useRouter()
 const route = useRoute()
+const { isDark, toggleTheme } = useTheme()
 
 const clientsStore = useClientsStore()
 const projectsStore = useProjectsStore()
@@ -92,7 +94,7 @@ onMounted(() => {
           <router-link
             :to="item.path"
             class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary hover:bg-custom-hover transition-colors duration-300 rounded-r-lg border-l-[2px] border-transparent group"
-            active-class="bg-custom-hover text-primary border-l-primary-container"
+            active-class="bg-custom-hover !text-primary !border-l-primary"
           >
             <span class="material-symbols-outlined" :style="route.path.includes(item.path) ? 'font-variation-settings: \'FILL\' 1;' : ''">{{ item.icon }}</span>
             <span class="font-button text-button">{{ item.label }}</span>
@@ -128,13 +130,13 @@ onMounted(() => {
     </nav>
 
     <!-- MOBILE BOTTOM BAR (Visible only on screens < 768px) -->
-    <nav class="no-print md:hidden fixed bottom-0 left-0 right-0 bg-custom-bg-sidebar border-t border-custom-border flex justify-around py-3 z-50">
+    <nav class="no-print md:hidden fixed bottom-0 left-0 right-0 bg-custom-bg-sidebar border-t border-custom-border flex justify-around pt-3 pb-[calc(12px+env(safe-area-inset-bottom))] z-50">
       <router-link
         v-for="item in navItems"
         :key="item.path"
         :to="item.path"
         class="flex flex-col items-center gap-1 text-on-surface-variant"
-        active-class="text-primary"
+        active-class="!text-primary"
       >
         <span class="material-symbols-outlined text-xl">{{ item.icon }}</span>
         <span class="text-[9px] uppercase tracking-wider font-medium">{{ item.label }}</span>
@@ -147,7 +149,12 @@ onMounted(() => {
       <header class="no-print flex justify-between items-center px-6 md:px-10 py-6 md:py-8 bg-background sticky top-0 z-40 border-b border-transparent">
         <h2 class="font-headline-sm text-headline-sm text-on-background text-left">{{ greeting }}</h2>
         
-        <div class="flex items-center gap-6">
+        <div class="flex items-center gap-4 md:gap-6">
+          <!-- Mobile Search Trigger -->
+          <button @click="isSearchOpen = true" class="md:hidden text-on-surface-variant hover:text-primary transition-colors">
+            <span class="material-symbols-outlined">search</span>
+          </button>
+
           <!-- Desktop Search Trigger -->
           <div 
             @click="isSearchOpen = true"
@@ -161,6 +168,15 @@ onMounted(() => {
           <button class="relative text-on-surface-variant hover:text-primary transition-colors">
             <span class="material-symbols-outlined">notifications</span>
             <span class="absolute top-0 right-0 w-2 h-2 bg-primary rounded-full border border-background"></span>
+          </button>
+
+          <!-- Theme Toggle Button -->
+          <button 
+            @click="toggleTheme" 
+            class="text-on-surface-variant hover:text-primary transition-colors hover:scale-105 active:scale-95 duration-200"
+            title="Toggle theme"
+          >
+            <span class="material-symbols-outlined">{{ isDark ? 'light_mode' : 'dark_mode' }}</span>
           </button>
         </div>
       </header>
@@ -180,7 +196,7 @@ onMounted(() => {
     <!-- COMMAND PALETTE MODAL -->
     <div 
       v-if="isSearchOpen"
-      class="fixed inset-0 bg-background/90 backdrop-blur-sm z-[9999] flex items-start justify-center pt-[15vh] px-4"
+      class="fixed inset-0 bg-background/90 backdrop-blur-sm z-[9999] flex items-start justify-center pt-[10vh] md:pt-[15vh] px-4"
       @click.self="isSearchOpen = false"
     >
       <div class="bg-custom-bg-card border border-custom-border rounded-sm max-w-lg w-full overflow-hidden shadow-2xl flex flex-col">
@@ -226,7 +242,6 @@ onMounted(() => {
     </div>
   </div>
 </template>
-
 <style scoped>
 .page-enter-active {
   transition: all 350ms cubic-bezier(0.16, 1, 0.3, 1);

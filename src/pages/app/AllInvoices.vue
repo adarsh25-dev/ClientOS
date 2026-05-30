@@ -67,14 +67,14 @@ onMounted(() => {
 <template>
   <div class="flex flex-col gap-8 text-left">
     <!-- Header -->
-    <div class="flex justify-between items-center border-b border-custom-border pb-6">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-custom-border pb-6">
       <div>
         <h2 class="font-display text-2xl text-on-surface mb-1">Invoices</h2>
         <p class="font-body text-xs text-on-surface-variant">Generate line item summaries and printable PDF invoices.</p>
       </div>
       <router-link
         to="/app/invoices/new"
-        class="bg-primary hover:bg-primary-container text-on-primary font-button text-xs uppercase tracking-widest py-3 px-6 rounded-sm transition-colors flex items-center gap-2"
+        class="btn-accent text-[#0A0A0F] font-button text-xs uppercase tracking-widest py-3 px-6 rounded-sm transition-colors flex items-center gap-2"
       >
         <span class="material-symbols-outlined text-sm">receipt</span>
         Build Invoice
@@ -113,7 +113,7 @@ onMounted(() => {
         v-for="invoice in filteredInvoices"
         :key="invoice.id"
         @click="router.push(`/app/invoices/${invoice.id}`)"
-        class="bg-custom-bg-card border border-custom-border p-4 rounded-sm flex items-center justify-between hover:bg-custom-hover transition-colors cursor-pointer group"
+        class="bg-custom-bg-card border border-custom-border p-4 rounded-sm flex flex-col sm:flex-row gap-4 sm:items-center justify-between hover:bg-custom-hover transition-colors cursor-pointer group"
       >
         <div class="flex items-center gap-4">
           <div class="w-10 h-10 rounded-full bg-custom-hover flex items-center justify-center border border-custom-border">
@@ -128,8 +128,8 @@ onMounted(() => {
           </div>
         </div>
 
-        <div class="flex items-center gap-6">
-          <div class="text-right">
+        <div class="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto">
+          <div class="text-left sm:text-right">
             <span class="text-xs font-mono font-semibold text-primary">${{ invoice.total }}</span>
             <p class="text-[10px] text-custom-muted mt-0.5">Due: {{ formatDate(invoice.due_date) }}</p>
           </div>

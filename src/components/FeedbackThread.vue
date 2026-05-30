@@ -167,7 +167,7 @@ const formatTime = (timeStr) => {
       <span class="text-xs font-button uppercase tracking-widest text-[#F0EDE6]">
         {{ fileId ? 'File Review Feed' : 'Project Discussion' }}
       </span>
-      <span class="text-[10px] text-[#C9A84C] bg-[#C9A84C]/5 px-2 py-0.5 rounded border border-[#C9A84C]/10 font-semibold uppercase">Realtime Live</span>
+      <span class="text-[10px] text-primary bg-primary/5 px-2 py-0.5 rounded border border-primary/10 font-semibold uppercase">Realtime Live</span>
     </div>
 
     <!-- Comments List -->
@@ -220,7 +220,7 @@ const formatTime = (timeStr) => {
           <button 
             v-if="comment.content.split('\n').length > 3 || comment.content.length > 150"
             @click="expandedComments[comment.id] = !expandedComments[comment.id]"
-            class="text-[10px] uppercase font-bold tracking-widest text-[#C9A84C] mt-2 block transition-colors hover:text-[#F0EDE6]"
+            class="text-[10px] uppercase font-bold tracking-widest text-primary mt-2 block transition-colors hover:text-[#F0EDE6]"
           >
             {{ expandedComments[comment.id] ? 'Show Less' : 'Show More' }}
           </button>
@@ -237,12 +237,12 @@ const formatTime = (timeStr) => {
       <input 
         v-model="newCommentText"
         type="text" 
-        class="flex-1 bg-[#1A1A25] border border-[#1E2030] rounded-sm py-2 px-3 text-sm text-[#F0EDE6] placeholder-[#5A5A6A] focus:outline-none focus:border-[#C9A84C] transition-colors"
+        class="flex-1 bg-[#1A1A25] border border-[#1E2030] rounded-sm py-2 px-3 text-sm text-[#F0EDE6] placeholder-[#5A5A6A] focus:outline-none focus:border-primary transition-colors"
         placeholder="Type a message..."
       />
       <button 
         type="submit"
-        class="bg-[#C9A84C] hover:bg-[#8A7030] text-[#0A0A0F] font-button text-xs uppercase tracking-widest px-4 rounded-sm transition-colors flex items-center justify-center gap-1.5"
+        class="btn-accent text-[#0A0A0F] font-button text-xs uppercase tracking-widest px-4 rounded-sm flex items-center justify-center gap-1.5"
       >
         <span class="material-symbols-outlined text-sm">send</span>
         Send

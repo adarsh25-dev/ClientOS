@@ -1,7 +1,7 @@
 <template>
   <main class="flex-grow bg-surface w-full">
     <!-- CTA SECTION -->
-    <section id="pricing" class="cta-section relative w-full min-h-[819px] flex items-center justify-center overflow-hidden py-32 is-visible bg-surface">
+    <section id="pricing" class="cta-section relative w-full min-h-[600px] md:min-h-[819px] flex items-center justify-center overflow-hidden py-20 md:py-32 is-visible bg-surface">
         <div class="cta-watermark">CLIENTOS</div>
         <div class="cta-glow"></div>
         <div class="relative z-10 flex flex-col items-center text-center px-margin-mobile md:px-margin-desktop max-w-[1000px] mx-auto">
@@ -24,7 +24,7 @@
   </main>
 
   <!-- FOOTER -->
-  <footer class="bg-surface dark:bg-surface border-t border-outline-variant/20 w-full px-margin-desktop py-stack-lg flex flex-col justify-between items-center relative z-10" style="background-color: #131318;">
+  <footer class="bg-surface dark:bg-surface border-t border-outline-variant/20 w-full px-6 md:px-margin-desktop py-stack-lg flex flex-col justify-between items-center relative z-10" style="background-color: #131318;">
       <div class="max-w-[1440px] mx-auto w-full flex flex-col gap-16">
           <!-- 4-Column Grid -->
           <div class="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-8 w-full">
@@ -145,7 +145,7 @@ onMounted(() => {
     transform: translate(-50%, -50%);
     width: 80vw;
     height: 80vw;
-    background: radial-gradient(circle, #C9A84C 0%, transparent 60%);
+    background: radial-gradient(circle, var(--color-primary, #C9A84C) 0%, transparent 60%);
     opacity: 0;
     pointer-events: none;
     z-index: 0;

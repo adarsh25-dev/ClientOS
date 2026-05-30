@@ -6,7 +6,7 @@ const { toasts, dismiss } = useToast()
 const getBorderColor = (type) => {
   switch (type) {
     case 'success':
-      return 'border-l-[#C9A84C]'
+      return 'border-l-primary'
     case 'warning':
       return 'border-l-warning'
     case 'error':

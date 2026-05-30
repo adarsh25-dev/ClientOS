@@ -57,15 +57,15 @@ onMounted(() => {
 </script>
 
 <template>
-  <div :class="['min-h-screen bg-[#0A0A0F] text-[#F0EDE6] antialiased flex items-center justify-center p-6 selection:bg-[#C9A84C]/20 selection:text-[#C9A84C]', { 'is-loaded': isLoaded }]">
+  <div :class="['min-h-screen bg-[#0A0A0F] text-[#F0EDE6] antialiased flex items-center justify-center p-6 selection:bg-primary/20 selection:text-primary', { 'is-loaded': isLoaded }]">
     
     <!-- Background subtle lights -->
-    <div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#C9A84C]/5 rounded-full blur-[120px] pointer-events-none"></div>
+    <div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] pointer-events-none"></div>
     <div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-blue-500/5 rounded-full blur-[120px] pointer-events-none"></div>
 
     <div class="w-full max-w-[420px] bg-[#0D0D14] border border-[#1E2030] rounded-sm p-8 md:p-10 relative overflow-hidden anim-fade-up shadow-2xl">
       <!-- Logo header -->
-      <div class="flex items-center gap-2 text-[#C9A84C] mb-8 justify-center">
+      <div class="flex items-center gap-2 text-primary mb-8 justify-center">
         <span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">widgets</span>
         <span class="font-display text-lg font-bold tracking-tight">ClientOS</span>
       </div>
@@ -93,7 +93,7 @@ onMounted(() => {
         <button
           type="button"
           @click="router.push('/login')"
-          class="w-full bg-[#C9A84C] hover:bg-[#8A7030] text-[#0A0A0F] font-button text-xs uppercase tracking-widest py-4 rounded-sm transition-colors flex items-center justify-center gap-2 group font-semibold"
+          class="w-full btn-accent text-[#0A0A0F] font-button text-xs uppercase tracking-widest py-4 rounded-sm flex items-center justify-center gap-2 group font-semibold"
         >
           Go to Login
           <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
@@ -127,7 +127,7 @@ onMounted(() => {
         <button
           type="submit"
           :disabled="loading"
-          class="w-full bg-[#C9A84C] hover:bg-[#8A7030] text-[#0A0A0F] font-button text-xs uppercase tracking-widest py-4 rounded-sm transition-all flex items-center justify-center gap-2 group disabled:opacity-50 font-semibold"
+          class="w-full btn-accent text-[#0A0A0F] font-button text-xs uppercase tracking-widest py-4 rounded-sm flex items-center justify-center gap-2 group disabled:opacity-50 font-semibold"
         >
           <template v-if="loading">
             <span class="flex gap-1">
@@ -172,7 +172,7 @@ onMounted(() => {
   left: 0;
   width: 0;
   height: 1px;
-  background-color: #C9A84C;
+  background-color: var(--color-primary, #c9a84c);
   transition: width 0.4s ease;
 }
 .input-focus-border:focus-within::after {
@@ -188,7 +188,7 @@ onMounted(() => {
 }
 .input-minimal:focus {
   outline: none;
-  border-bottom-color: #C9A84C;
+  border-bottom-color: var(--color-primary, #c9a84c);
   box-shadow: none;
 }
 </style>

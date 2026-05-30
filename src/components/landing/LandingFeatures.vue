@@ -1,9 +1,9 @@
 <template>
-  <main id="platform" class="flex-grow w-full max-w-[1440px] mx-auto px-margin-desktop py-stack-lg mt-12 md:mt-24 relative z-10">
+  <main id="platform" class="flex-grow w-full max-w-[1440px] mx-auto px-6 md:px-margin-desktop py-stack-lg mt-12 md:mt-24 relative z-10">
     <div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
         <!-- Left Sticky Panel -->
         <div class="md:col-span-5 relative">
-            <div class="sticky top-[150px] flex flex-col gap-stack-lg">
+            <div class="md:sticky top-[150px] flex flex-col gap-stack-lg">
                 <h1 class="font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface leading-tight">
                     The Core<br/>Infrastructure
                 </h1>
@@ -29,9 +29,9 @@
         </div>
         
         <!-- Right Scroll Panel -->
-        <div class="md:col-span-7 flex flex-col gap-[153px] pb-[204px] mt-24 md:mt-0">
+        <div class="md:col-span-7 flex flex-col gap-24 md:gap-[153px] pb-[100px] md:pb-[204px] mt-16 md:mt-0">
             <!-- Card 1 -->
-            <article class="feature-card reveal-hidden transition-all duration-[1200ms] cinematic-ease bg-surface-dim border border-[#2A2D3A] hover:border-primary p-stack-lg md:p-[4rem] flex flex-col gap-stack-lg relative overflow-hidden" id="card-0">
+            <article class="feature-card reveal-hidden transition-all duration-[1200ms] cinematic-ease bg-surface-dim border border-[#2A2D3A] hover:border-primary p-8 md:p-[4rem] flex flex-col gap-stack-lg relative overflow-hidden" id="card-0">
                 <div class="absolute top-0 right-0 p-8 font-headline-xl text-headline-xl text-primary/10 select-none">01</div>
                 
                 <div class="flex flex-col gap-4 z-10">
@@ -78,7 +78,7 @@
             </article>
 
             <!-- Card 2 -->
-            <article class="feature-card reveal-hidden transition-all duration-[1200ms] cinematic-ease bg-surface-dim border border-[#2A2D3A] hover:border-primary p-stack-lg md:p-[4rem] flex flex-col gap-stack-lg relative overflow-hidden" id="intelligence">
+            <article class="feature-card reveal-hidden transition-all duration-[1200ms] cinematic-ease bg-surface-dim border border-[#2A2D3A] hover:border-primary p-8 md:p-[4rem] flex flex-col gap-stack-lg relative overflow-hidden" id="intelligence">
                 <div class="absolute top-0 right-0 p-8 font-headline-xl text-headline-xl text-primary/10 select-none">02</div>
                 
                 <div class="flex flex-col gap-4 z-10">
@@ -106,7 +106,7 @@
             </article>
 
             <!-- Card 3 -->
-            <article class="feature-card reveal-hidden transition-all duration-[1200ms] cinematic-ease bg-surface-dim border border-[#2A2D3A] hover:border-primary p-stack-lg md:p-[4rem] flex flex-col gap-stack-lg relative overflow-hidden" id="card-2">
+            <article class="feature-card reveal-hidden transition-all duration-[1200ms] cinematic-ease bg-surface-dim border border-[#2A2D3A] hover:border-primary p-8 md:p-[4rem] flex flex-col gap-stack-lg relative overflow-hidden" id="card-2">
                 <div class="absolute top-0 right-0 p-8 font-headline-xl text-headline-xl text-primary/10 select-none">03</div>
                 
                 <div class="flex flex-col gap-4 z-10">
@@ -154,7 +154,7 @@
             </article>
 
             <!-- Card 4 -->
-            <article class="feature-card reveal-hidden transition-all duration-[1200ms] cinematic-ease bg-surface-dim border border-[#2A2D3A] hover:border-primary p-stack-lg md:p-[4rem] flex flex-col gap-stack-lg relative overflow-hidden" id="card-3">
+            <article class="feature-card reveal-hidden transition-all duration-[1200ms] cinematic-ease bg-surface-dim border border-[#2A2D3A] hover:border-primary p-8 md:p-[4rem] flex flex-col gap-stack-lg relative overflow-hidden" id="card-3">
                 <div class="absolute top-0 right-0 p-8 font-headline-xl text-headline-xl text-primary/10 select-none">04</div>
                 
                 <div class="flex flex-col gap-4 z-10">
@@ -198,7 +198,7 @@
             </article>
 
             <!-- Card 5 -->
-            <article class="feature-card reveal-hidden transition-all duration-[1200ms] cinematic-ease bg-surface-dim border border-[#2A2D3A] hover:border-primary p-stack-lg md:p-[4rem] flex flex-col gap-stack-lg relative overflow-hidden" id="card-4">
+            <article class="feature-card reveal-hidden transition-all duration-[1200ms] cinematic-ease bg-surface-dim border border-[#2A2D3A] hover:border-primary p-8 md:p-[4rem] flex flex-col gap-stack-lg relative overflow-hidden" id="card-4">
                 <div class="absolute top-0 right-0 p-8 font-headline-xl text-headline-xl text-primary/10 select-none">05</div>
                 
                 <div class="flex flex-col gap-4 z-10">
@@ -313,7 +313,7 @@ onMounted(() => {
 
 /* Progress Item Active State */
 .progress-item.active {
-    color: #C9A84C;
+    color: var(--color-primary, #C9A84C);
     transform: translateX(10px);
 }
 

@@ -361,7 +361,7 @@ onMounted(() => {
     left: 0;
     width: 0;
     height: 1px;
-    background-color: #c9a84c; /* primary-container */
+    background-color: var(--color-primary, #c9a84c); /* primary-container */
     transition: width 0.4s ease;
 }
 .input-focus-border:focus-within::after {

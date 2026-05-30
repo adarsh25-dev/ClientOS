@@ -29,7 +29,7 @@ const handleRetry = () => {
     </div>
     <button
       @click="handleRetry"
-      class="border border-[#1E2030] hover:border-red-500/30 bg-[#16161F] text-xs font-button uppercase tracking-widest text-[#F0EDE6] hover:text-[#C9A84C] py-2 px-5 rounded-sm transition-all"
+      class="border border-[#1E2030] hover:border-red-500/30 bg-[#16161F] text-xs font-button uppercase tracking-widest text-[#F0EDE6] hover:text-primary py-2 px-5 rounded-sm transition-all"
     >
       Retry
     </button>

@@ -277,7 +277,7 @@ const mockSupabase = {
 
 // Seed mock database on local load
 const seedMockDB = () => {
-  if (true) { // Force re-seed to match UI
+  if (!localStorage.getItem('mock_db_profiles')) { // Only seed if empty
     localStorage.clear()
     const profileId = 'mock-user-123'
     

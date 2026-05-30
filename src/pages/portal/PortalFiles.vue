@@ -116,16 +116,16 @@ const getStatusLabel = (status) => {
         <!-- Info row -->
         <div class="flex justify-between items-start">
           <div class="flex items-center gap-3 cursor-pointer" @click="downloadFile(file)">
-            <span class="material-symbols-outlined text-2xl text-[#C9A84C]">
+            <span class="material-symbols-outlined text-2xl text-primary">
               {{ getFileIcon(file.file_type) }}
             </span>
             <div class="text-left max-w-[160px]">
-              <h4 class="text-xs font-semibold text-[#F0EDE6] truncate hover:text-[#C9A84C] transition-colors">{{ file.name }}</h4>
+              <h4 class="text-xs font-semibold text-[#F0EDE6] truncate hover:text-primary transition-colors">{{ file.name }}</h4>
               <p class="text-[10px] text-[#5A5A70] mt-0.5">{{ formatDate(file.uploaded_at) }}</p>
             </div>
           </div>
 
-          <span class="text-[10px] uppercase font-bold tracking-wider text-[#C9A84C] bg-[#C9A84C]/5 px-2 py-0.5 rounded border border-[#C9A84C]/10 font-semibold select-none">
+          <span class="text-[10px] uppercase font-bold tracking-wider text-primary bg-primary/5 px-2 py-0.5 rounded border border-primary/10 font-semibold select-none">
             v{{ file.version }}
           </span>
         </div>
@@ -138,7 +138,7 @@ const getStatusLabel = (status) => {
 
           <button
             @click="expandedFileId = expandedFileId === file.id ? null : file.id"
-            class="text-xs font-button uppercase tracking-wider text-[#5A5A70] hover:text-[#C9A84C] flex items-center gap-1"
+            class="text-xs font-button uppercase tracking-wider text-[#5A5A70] hover:text-primary flex items-center gap-1"
           >
             <span>Feedback</span>
             <span class="material-symbols-outlined text-sm transition-transform" :class="expandedFileId === file.id ? 'rotate-180' : ''">keyboard_arrow_down</span>
@@ -165,7 +165,7 @@ const getStatusLabel = (status) => {
         <div v-if="requestingChangesId === file.id" class="border-t border-[#1E2030]/50 pt-4 mt-2 flex flex-col gap-2.5">
           <textarea
             v-model="changesFeedback[file.id]"
-            class="w-full h-20 bg-[#1A1A25] border border-[#1E2030] rounded-sm p-2 text-xs text-[#F0EDE6] placeholder-[#5A5A6A] focus:outline-none focus:border-[#C9A84C]"
+            class="w-full h-20 bg-[#1A1A25] border border-[#1E2030] rounded-sm p-2 text-xs text-[#F0EDE6] placeholder-[#5A5A6A] focus:outline-none focus:border-primary"
             placeholder="Describe what changes are needed..."
           ></textarea>
           <div class="flex gap-2 justify-end">

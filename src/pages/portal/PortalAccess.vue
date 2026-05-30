@@ -42,14 +42,14 @@ onMounted(async () => {
 <template>
   <div class="min-h-screen bg-[#0A0A0F] text-[#E9E1D7] antialiased flex flex-col justify-center items-center p-6 relative overflow-hidden">
     <div class="w-full max-w-md bg-[#0D0D14] border border-[#1E2030] p-8 md:p-12 rounded-sm shadow-2xl relative z-10 text-center">
-      <div class="flex items-center gap-2.5 text-[#C9A84C] mb-8 justify-center">
+      <div class="flex items-center gap-2.5 text-primary mb-8 justify-center">
         <span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">widgets</span>
         <span class="font-display text-xl font-bold tracking-tight text-white">ClientOS Portal</span>
       </div>
 
       <!-- Verifying state -->
       <div v-if="verifying" class="flex flex-col items-center justify-center gap-4 py-8">
-        <div class="w-10 h-10 border-t-2 border-r-2 border-[#C9A84C] rounded-full animate-spin"></div>
+        <div class="w-10 h-10 border-t-2 border-r-2 border-primary rounded-full animate-spin"></div>
         <div class="flex flex-col gap-1">
           <span class="text-sm font-medium text-[#F0EDE6]">Verifying Secure Credentials</span>
           <span class="text-[10px] uppercase tracking-wider text-[#5A5A70]">Decrypting access tokens...</span>

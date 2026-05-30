@@ -147,8 +147,10 @@ router.beforeEach(async (to, from, next) => {
 
     const token = queryToken || localToken
     if (!token) {
+      // No token at all — gate the user at the access page
       return next({ name: 'portal-access', params: { slug } })
     }
+    // Token is present; PortalLayout will handle re-initialization if store is empty
   }
 
   next()

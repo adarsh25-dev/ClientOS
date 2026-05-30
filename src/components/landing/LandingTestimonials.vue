@@ -10,14 +10,14 @@
         <div class="flex overflow-x-auto hide-scrollbar gap-gutter px-margin-desktop cursor-grab active:cursor-grabbing snap-x snap-mandatory py-4 max-w-full" id="testimonial-carousel">
             
             <!-- Card 1 -->
-            <article class="testimonial-card flex-shrink-0 w-[85vw] md:w-[45vw] lg:w-[38vw] max-w-[500px] bg-surface border border-outline-variant rounded-none p-8 md:p-12 flex flex-col justify-between gap-8 snap-center opacity-0 translate-x-10 transition-all duration-[600ms] ease-cinematic hover:-translate-y-2 hover:border-primary-container group">
+            <article class="testimonial-card flex-shrink-0 w-[85vw] md:w-[45vw] lg:w-[38vw] max-w-[500px] bg-surface border border-[#252321] rounded-none p-8 md:p-12 flex flex-col justify-between gap-8 snap-center opacity-0 translate-x-10 transition-all duration-[600ms] ease-cinematic hover:-translate-y-2 hover:border-primary-container group">
                 <div class="flex flex-col gap-6">
                     <span class="font-display-lg text-display-lg text-primary-container leading-none opacity-80">"</span>
                     <p class="font-headline-lg text-[22px] md:text-[24px] leading-[1.6] text-on-surface transition-colors group-hover:text-white">
                         We stopped sending 14-email threads the day we switched. Our clients feel like they're working with a proper agency now.
                     </p>
                 </div>
-                <div class="flex items-center gap-4 pt-6 border-t border-outline-variant/30">
+                <div class="flex items-center gap-4 pt-6 border-t border-[#252321]">
                     <img alt="Avatar of Sarah M." class="w-10 h-10 object-cover rounded-full grayscale opacity-80 group-hover:grayscale-0 transition-all duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgrjfw3nVVdpWQKOmIhrYQwU2BK8Au7_42pd13RXsJEwUS1JdHXTHStoOnSjeNxKqz-96GqIvcK3Xlw7KGm-ioJ-4b0B7IGOD_eoSUuvE5KLODyfZ91rUz2apww2huY58e81AngBIic2Zpql_P_tYiNBDo9lj1asp3EyylcaEZDxpqUojI5b8lZobAM20Gb_9T39_ChbW7JBpQ7tCyw-V9f-ZBrfglkVtxPvvTGxjUmlwyx6sYsPX32lP3YOMhV45kJakKyE_UjRQ"/>
                     <div class="flex flex-col">
                         <span class="font-body-md text-body-md text-on-surface">Sarah M.</span>
@@ -27,14 +27,14 @@
             </article>
 
             <!-- Card 2 -->
-            <article class="testimonial-card flex-shrink-0 w-[85vw] md:w-[45vw] lg:w-[38vw] max-w-[500px] bg-surface border border-outline-variant rounded-none p-8 md:p-12 flex flex-col justify-between gap-8 snap-center opacity-0 translate-x-10 transition-all duration-[600ms] ease-cinematic hover:-translate-y-2 hover:border-primary-container group" style="transition-delay: 150ms;">
+            <article class="testimonial-card flex-shrink-0 w-[85vw] md:w-[45vw] lg:w-[38vw] max-w-[500px] bg-surface border border-[#252321] rounded-none p-8 md:p-12 flex flex-col justify-between gap-8 snap-center opacity-0 translate-x-10 transition-all duration-[600ms] ease-cinematic hover:-translate-y-2 hover:border-primary-container group" style="transition-delay: 150ms;">
                 <div class="flex flex-col gap-6">
                     <span class="font-display-lg text-display-lg text-primary-container leading-none opacity-80">"</span>
                     <p class="font-headline-lg text-[22px] md:text-[24px] leading-[1.6] text-on-surface transition-colors group-hover:text-white">
                         The AI summary feature alone saves me 2 hours a week. I just paste my Slack notes and it writes the client update for me.
                     </p>
                 </div>
-                <div class="flex items-center gap-4 pt-6 border-t border-outline-variant/30">
+                <div class="flex items-center gap-4 pt-6 border-t border-[#252321]">
                     <img alt="Avatar of James T." class="w-10 h-10 object-cover rounded-full grayscale opacity-80 group-hover:grayscale-0 transition-all duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLeETLinvGxvZN-mP6z9OYc3WAQDhByCuIYLo3WGMw6F3DCnPJfGKU68BJt4paWDmXt8PUTk7U0xtVxWmaVlWNz0tMIxdpuC0YHzxSMvvvedr08VXP6qXhY4QmaFe2tLheSnlTba4mARxnHLy98Xyv5p2aoc_A7QEQK0y7rwWmjKZdtmoTppVxLRSz7yrxNJwx-wpp_GMxwn_yghmD5AcoOvNNeXAqpsGp3ZT-XMy0GH8FS_R3g8gJ45pMWJYMAv-9kgavVXbovAs"/>
                     <div class="flex flex-col">
                         <span class="font-body-md text-body-md text-on-surface">James T.</span>
@@ -44,14 +44,14 @@
             </article>
 
             <!-- Card 3 -->
-            <article class="testimonial-card flex-shrink-0 w-[85vw] md:w-[45vw] lg:w-[38vw] max-w-[500px] bg-surface border border-outline-variant rounded-none p-8 md:p-12 flex flex-col justify-between gap-8 snap-center opacity-0 translate-x-10 transition-all duration-[600ms] ease-cinematic hover:-translate-y-2 hover:border-primary-container group" style="transition-delay: 300ms;">
+            <article class="testimonial-card flex-shrink-0 w-[85vw] md:w-[45vw] lg:w-[38vw] max-w-[500px] bg-surface border border-[#252321] rounded-none p-8 md:p-12 flex flex-col justify-between gap-8 snap-center opacity-0 translate-x-10 transition-all duration-[600ms] ease-cinematic hover:-translate-y-2 hover:border-primary-container group" style="transition-delay: 300ms;">
                 <div class="flex flex-col gap-6">
                     <span class="font-display-lg text-display-lg text-primary-container leading-none opacity-80">"</span>
                     <p class="font-headline-lg text-[22px] md:text-[24px] leading-[1.6] text-on-surface transition-colors group-hover:text-white">
                         Every portal feels like it was made for that specific client. Our retention improved noticeably after switching.
                     </p>
                 </div>
-                <div class="flex items-center gap-4 pt-6 border-t border-outline-variant/30">
+                <div class="flex items-center gap-4 pt-6 border-t border-[#252321]">
                     <img alt="Avatar of Priya K." class="w-10 h-10 object-cover rounded-full grayscale opacity-80 group-hover:grayscale-0 transition-all duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnzkMG4lLoh1h13_uzaMqj6m7m2eXtqby0LVdQ2Uxn8M3-oa8ZB3IIxFiEzDxPSq-9-EbJ1KL_Zm9_tpSp16nVHfGQcPtGZ7V9_JuQAuoBeNy80s1Xi3F1JeMkb_jPvC_DzkSBld2cO8Cjy7xbEiLSGFk2PBY_0tfsKqsS3kCoAS3sbpvusJXnlglBnoy1c1Z-mKsl9krpslXpDJf3yYRR-csclQgTcPHtkcJLq5KXnAAbEid_oAZYVUKkZVQ_qOrHux01FtARh9U"/>
                     <div class="flex flex-col">
                         <span class="font-body-md text-body-md text-on-surface">Priya K.</span>

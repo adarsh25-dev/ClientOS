@@ -495,7 +495,7 @@ onMounted(() => {
           <!-- Left: Preview / Details (70%) -->
           <div class="flex-1 bg-custom-bg-sidebar flex flex-col p-6 justify-between border-b md:border-b-0 md:border-r border-custom-border">
             <!-- Top bar -->
-            <div class="flex justify-between items-start gap-4">
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
               <div>
                 <div class="flex items-center gap-3">
                   <h3 class="text-sm font-semibold text-on-surface truncate max-w-sm">{{ selectedFile?.name }}</h3>
@@ -580,9 +580,9 @@ onMounted(() => {
             </div>
 
             <!-- Footer: Freelancer override review status actions -->
-            <div class="flex items-center justify-between border-t border-custom-border/50 pt-4 mt-2">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-custom-border/50 pt-4 mt-2">
               <span class="text-[10px] uppercase font-bold text-on-surface-variant tracking-wider">Review Override:</span>
-              <div class="flex gap-2">
+              <div class="flex flex-wrap gap-2">
                 <button
                   @click="updateFileStatus('changes_requested')"
                   :disabled="selectedFile?.status === 'changes_requested'"

@@ -93,7 +93,7 @@ const handleRegenerate = () => {
       <!-- Header -->
       <div class="px-6 py-4 bg-[#0D0D14] border-b border-[#1E2030] flex items-center justify-between">
         <div class="flex items-center gap-2">
-          <span class="material-symbols-outlined text-[#C9A84C]">bolt</span>
+          <span class="material-symbols-outlined text-primary">bolt</span>
           <span class="font-headline-sm text-sm uppercase tracking-widest text-[#F0EDE6]">
             AI Project Update Generator
           </span>
@@ -115,7 +115,7 @@ const handleRegenerate = () => {
             <label class="font-label-caps text-[10px] text-[#5A5A70] uppercase tracking-widest block mb-2">Raw Notes & Completed Milestones</label>
             <textarea
               v-model="rawNotes"
-              class="w-full h-32 bg-[#1A1A25] border border-[#1E2030] rounded-sm p-3 text-sm text-[#F0EDE6] placeholder-[#5A5A6A] focus:outline-none focus:border-[#C9A84C] transition-colors resize-none"
+              class="w-full h-32 bg-[#1A1A25] border border-[#1E2030] rounded-sm p-3 text-sm text-[#F0EDE6] placeholder-[#5A5A6A] focus:outline-none focus:border-primary transition-colors resize-none"
               placeholder="Example: Wrapped wireframe designs. Sent home page details. Working on user auth setup. Next: configure DB routes."
             ></textarea>
           </div>
@@ -130,7 +130,7 @@ const handleRegenerate = () => {
                 type="button"
                 class="py-2.5 px-4 rounded-sm text-xs font-button uppercase tracking-wider border transition-all text-center"
                 :class="tone === t
-                  ? 'bg-[#C9A84C]/10 border-[#C9A84C] text-[#C9A84C]'
+                  ? 'bg-primary/10 border-primary text-primary'
                   : 'bg-[#1A1A25] border-[#1E2030] text-[#A0A0B0] hover:text-[#F0EDE6]'"
               >
                 {{ t }}
@@ -141,7 +141,7 @@ const handleRegenerate = () => {
           <button
             @click="handleGenerate"
             :disabled="!rawNotes.trim()"
-            class="w-full bg-[#C9A84C] hover:bg-[#8A7030] disabled:bg-[#1A1A25] disabled:text-[#5A5A6A] disabled:border-[#1E2030] text-[#0A0A0F] font-button text-xs uppercase tracking-widest py-3.5 rounded-sm transition-all duration-300 flex items-center justify-center gap-2"
+            class="w-full btn-accent disabled:bg-[#1A1A25] disabled:text-[#5A5A6A] disabled:border-[#1E2030] text-[#0A0A0F] font-button text-xs uppercase tracking-widest py-3.5 rounded-sm duration-300 flex items-center justify-center gap-2"
           >
             Generate Summary
             <span class="material-symbols-outlined text-sm">auto_awesome</span>
@@ -150,7 +150,7 @@ const handleRegenerate = () => {
 
         <!-- STEP 2: Generating -->
         <div v-else-if="step === 'generating'" class="py-12 flex flex-col items-center justify-center gap-4 text-center">
-          <div class="w-12 h-12 rounded-full border-t-[2px] border-r-[2px] border-[#C9A84C] animate-spin"></div>
+          <div class="w-12 h-12 rounded-full border-t-[2px] border-r-[2px] border-primary animate-spin"></div>
           <div class="flex flex-col gap-1">
             <span class="text-sm font-medium text-[#F0EDE6]">{{ statusMessage }}</span>
             <span class="text-xs text-[#5A5A70]">Parsing inputs & drafting content...</span>
@@ -185,7 +185,7 @@ const handleRegenerate = () => {
           <button
             @click="handleSendToClient"
             :disabled="loading || isSaved"
-            class="w-full bg-[#C9A84C] hover:bg-[#8A7030] disabled:bg-[#1A1A25] disabled:text-[#5A5A6A] text-[#0A0A0F] font-button text-xs uppercase tracking-widest py-3.5 rounded-sm transition-all flex items-center justify-center gap-2"
+            class="w-full btn-accent disabled:bg-[#1A1A25] disabled:text-[#5A5A6A] text-[#0A0A0F] font-button text-xs uppercase tracking-widest py-3.5 rounded-sm flex items-center justify-center gap-2"
           >
             <span class="material-symbols-outlined text-sm">send_and_archive</span>
             {{ isSaved ? 'Sent!' : 'Send to Client Portal' }}

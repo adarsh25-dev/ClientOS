@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../composables/useAuth'
 import { useToast } from '../../composables/useToast'
+import { hexToRgb } from '../../utils/color'
 
 const { profile, fetchProfile } = useAuth()
 const toast = useToast()
@@ -19,12 +20,20 @@ const profileForm = reactive({
   tagline: '',
   logoFile: null,
   logoPreview: null,
-  brandColor: '#C9A84C',
+  brandColor: '#c9a84c',
   portalSlug: ''
 })
 
 const logoInput = ref(null)
 const colors = ['#C9A84C', '#8A5C4E', '#4A5C4E', '#3D5A80', '#9A8C98', '#6B705C']
+
+// Live-preview the accent color change as user picks it — no save needed to see the effect
+watch(() => profileForm.brandColor, (color) => {
+  if (color && color.match(/^#[0-9A-Fa-f]{3,6}$/)) {
+    document.documentElement.style.setProperty('--color-primary', color)
+    document.documentElement.style.setProperty('--color-primary-rgb', hexToRgb(color))
+  }
+})
 
 const slugAvailable = ref(null)
 const checkingSlug = ref(false)
@@ -265,7 +274,7 @@ onMounted(() => {
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
       
       <!-- Left Tab selector list -->
-      <div class="lg:col-span-3 flex flex-col gap-1.5">
+      <div class="lg:col-span-3 flex flex-row overflow-x-auto lg:flex-col gap-1.5 custom-scrollbar pb-2 lg:pb-0 whitespace-nowrap lg:whitespace-normal">
         <button
           v-for="tab in [
             { id: 'profile', label: 'Agency Profile', icon: 'badge' },
@@ -275,8 +284,8 @@ onMounted(() => {
           ]"
           :key="tab.id"
           @click="activeTab = tab.id"
-          class="flex items-center gap-3 px-4 py-3 rounded-sm text-xs font-button uppercase tracking-wider text-on-surface-variant hover:text-primary hover:bg-custom-bg-card transition-all"
-          :class="activeTab === tab.id ? 'bg-custom-bg-card text-primary' : ''"
+          class="flex items-center gap-3 px-4 py-3 rounded-sm text-xs font-button uppercase tracking-wider text-on-surface-variant hover:text-primary hover:bg-custom-bg-card transition-all border-l-2"
+          :class="activeTab === tab.id ? 'bg-primary/5 text-primary !border-primary' : 'border-transparent'"
         >
           <span class="material-symbols-outlined text-base">{{ tab.icon }}</span>
           <span>{{ tab.label }}</span>
@@ -326,17 +335,38 @@ onMounted(() => {
             <div>
               <label class="font-label-caps text-[9px] text-custom-muted uppercase tracking-widest block mb-2.5 font-bold font-sans">Brand Accent Color</label>
               <div class="flex flex-wrap items-center gap-3">
+                <!-- Predefined colors -->
                 <button
                   v-for="c in colors"
                   :key="c"
                   @click="profileForm.brandColor = c"
-                  class="w-6 h-6 rounded-full border border-transparent transition-all"
-                  :style="{ backgroundColor: c, outline: profileForm.brandColor === c ? `2px solid ${c}` : 'none', outlineOffset: '2px' }"
+                  class="w-6 h-6 rounded-full border border-transparent transition-all hover:scale-110 active:scale-95"
+                  :style="{ backgroundColor: c, outline: profileForm.brandColor.toUpperCase() === c.toUpperCase() ? `2px solid ${c}` : 'none', outlineOffset: '2px' }"
+                  :title="`Select predefined color ${c}`"
                 ></button>
+
+                <!-- Custom Color Picker -->
+                <div 
+                  class="relative w-6 h-6 rounded-full border border-custom-border/50 cursor-pointer flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-md"
+                  :style="{ 
+                    background: 'linear-gradient(135deg, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%)',
+                    outline: !colors.map(x => x.toUpperCase()).includes(profileForm.brandColor.toUpperCase()) ? `2px solid ${profileForm.brandColor}` : 'none',
+                    outlineOffset: '2px'
+                  }"
+                  title="Choose custom color"
+                >
+                  <input
+                    type="color"
+                    v-model="profileForm.brandColor"
+                    class="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
+                  />
+                  <span class="material-symbols-outlined text-[10px] text-white font-bold drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] pointer-events-none">palette</span>
+                </div>
+
                 <input
                   v-model="profileForm.brandColor"
                   type="text"
-                  class="bg-custom-hover border border-custom-border rounded-sm p-1.5 w-24 text-xs font-mono text-on-surface text-center focus:outline-none"
+                  class="bg-custom-hover border border-custom-border rounded-sm p-1.5 w-24 text-xs font-mono text-on-surface text-center focus:outline-none focus:border-primary"
                   placeholder="#Hex"
                 />
               </div>
@@ -359,7 +389,7 @@ onMounted(() => {
             <!-- Save Button -->
             <button
               @click="saveProfile"
-              class="self-start bg-primary hover:bg-primary-container text-on-primary font-button text-xs uppercase tracking-widest py-3 px-6 rounded-sm transition-colors mt-2"
+              class="self-start btn-accent text-[#0A0A0F] font-button text-xs uppercase tracking-widest py-3 px-6 rounded-sm transition-colors mt-2"
             >
               Save Profile
             </button>
@@ -417,7 +447,7 @@ onMounted(() => {
 
             <button
               @click="saveNotifications"
-              class="self-start bg-primary hover:bg-primary-container text-on-primary font-button text-xs uppercase tracking-widest py-3 px-6 rounded-sm transition-colors mt-2"
+              class="self-start btn-accent text-[#0A0A0F] font-button text-xs uppercase tracking-widest py-3 px-6 rounded-sm transition-colors mt-2"
             >
               Save Preferences
             </button>
@@ -454,7 +484,7 @@ onMounted(() => {
 
             <button
               @click="savePortalSettings"
-              class="self-start bg-primary hover:bg-primary-container text-on-primary font-button text-xs uppercase tracking-widest py-3 px-6 rounded-sm transition-colors mt-2"
+              class="self-start btn-accent text-[#0A0A0F] font-button text-xs uppercase tracking-widest py-3 px-6 rounded-sm transition-colors mt-2"
             >
               Update Settings
             </button>

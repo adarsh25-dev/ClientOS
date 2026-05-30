@@ -27,6 +27,7 @@ const editMode = ref(false)
 const invoiceId = ref(null)
 const isSendSuccessOpen = ref(false)
 const isPulsing = ref(false)
+const showMobilePreview = ref(false)
 
 const today = new Date().toISOString().split('T')[0]
 const thirtyDaysLater = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
@@ -51,7 +52,6 @@ import { watch } from 'vue'
 
 watch(() => form.clientId, (newId) => {
   if (editMode.value && !loading.value) {
-    // Let loadInvoiceToEdit handle it if loading
     const c = clientsStore.clients.find(c => c.id === newId)
     if (c) {
       form.clientName = c.name
@@ -147,14 +147,12 @@ const handleImageUpload = async (event) => {
       try {
         const extractedItems = await ai.extractInvoiceItems(dataUrl)
         if (extractedItems && extractedItems.length > 0) {
-          // If the only item is the default empty one, replace it
           if (form.lineItems.length === 1 && !form.lineItems[0].description && form.lineItems[0].rate === 0) {
             form.lineItems = extractedItems.map((item, idx) => ({
               ...item,
               id: String(Date.now() + idx)
             }))
           } else {
-            // Append
             extractedItems.forEach((item, idx) => {
               form.lineItems.push({
                 ...item,
@@ -311,7 +309,6 @@ onMounted(() => {
     loadInvoiceToEdit(id)
   } else {
     generateInvoiceNumber()
-    // Auto-prepopulate if route queries present
     if (route.query.clientId) form.clientId = route.query.clientId
     if (route.query.projectId) form.projectId = route.query.projectId
   }
@@ -325,39 +322,53 @@ const clientProjects = computed(() => {
 </script>
 
 <template>
-<div class="h-[calc(100vh-80px)] overflow-hidden flex flex-col md:flex-row -mt-8 -mx-8 relative z-0">
-  <!-- LEFT PANEL: Editor -->
-  <section class="w-full md:w-[55%] h-full overflow-y-auto bg-background p-margin-desktop border-r border-outline-variant custom-scrollbar animate-rise relative">
-    <div class="max-w-2xl mx-auto space-y-16 pb-32 pt-8">
-      <!-- Header -->
-      <div class="space-y-4 flex justify-between items-start">
-        <div>
-          <h1 class="font-display-lg text-display-lg md:text-display-lg text-on-surface">{{ editMode ? 'Edit Invoice' : 'New Invoice' }}</h1>
-          <p class="font-body-md text-body-md text-on-surface-variant">Drafting {{ form.invoiceNumber }}</p>
-        </div>
-        <div class="flex items-center gap-3 no-print">
-          <button
-            @click="saveInvoice('draft')"
-            :disabled="saving"
-            class="text-on-surface-variant hover-cinematic hover:text-tertiary font-label-caps text-label-caps uppercase border border-outline-variant hover:border-tertiary px-6 py-3"
-          >
-            Save as Draft
-          </button>
-          <button
-            @click="saveInvoice('sent')"
-            :disabled="saving"
-            class="bg-tertiary text-on-tertiary font-label-caps text-label-caps uppercase px-6 py-3 hover:bg-tertiary-fixed hover-cinematic flex items-center gap-2"
-          >
-            <span class="material-symbols-outlined text-[18px]">send</span> Send
-          </button>
+  <div class="flex flex-col lg:flex-row -m-6 md:-m-10 relative z-0 flex-grow lg:overflow-hidden min-h-0">
+
+    <!-- LEFT PANEL: Editor -->
+    <section class="w-full lg:w-[55%] lg:h-full overflow-y-auto bg-background border-b lg:border-b-0 lg:border-r border-outline-variant custom-scrollbar animate-rise relative">
+    <div class="max-w-2xl mx-auto space-y-12 lg:space-y-16 pb-8 lg:pb-32 pt-6 lg:pt-8 px-6 md:px-10 lg:px-margin-desktop">
+
+      <!-- Header: title + action buttons -->
+      <div class="space-y-4">
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+          <div>
+            <h1 class="font-display-lg text-display-lg text-on-surface">{{ editMode ? 'Edit Invoice' : 'New Invoice' }}</h1>
+            <p class="font-body-md text-body-md text-on-surface-variant">Drafting {{ form.invoiceNumber }}</p>
+          </div>
+          <!-- Action buttons: wrap gracefully -->
+          <div class="flex flex-wrap items-center gap-2 no-print">
+            <!-- Mobile preview toggle -->
+            <button
+              @click="showMobilePreview = true"
+              class="lg:hidden flex items-center gap-1.5 text-on-surface-variant hover-cinematic hover:text-primary font-label-caps text-label-caps uppercase border border-outline-variant hover:border-primary px-4 py-2.5 text-xs"
+            >
+              <span class="material-symbols-outlined text-[16px]">preview</span>
+              Preview
+            </button>
+            <button
+              @click="saveInvoice('draft')"
+              :disabled="saving"
+              class="hidden lg:flex text-on-surface-variant hover-cinematic hover:text-primary font-label-caps text-label-caps uppercase border border-outline-variant hover:border-primary px-4 md:px-6 py-2.5 md:py-3 text-xs disabled:opacity-50"
+            >
+              Save Draft
+            </button>
+            <button
+              @click="saveInvoice('sent')"
+              :disabled="saving"
+              class="hidden lg:flex bg-primary text-on-primary font-label-caps text-label-caps uppercase px-4 md:px-6 py-2.5 md:py-3 hover:bg-primary-fixed hover-cinematic items-center gap-1.5 text-xs disabled:opacity-50"
+            >
+              <span class="material-symbols-outlined text-[16px]">send</span>
+              {{ saving ? 'Saving...' : 'Send' }}
+            </button>
+          </div>
         </div>
       </div>
 
       <!-- Bill To Section -->
-      <div class="space-y-8 animate-rise stagger-1">
-        <h2 class="font-label-caps text-label-caps text-tertiary uppercase tracking-widest border-b border-outline-variant pb-2">Bill To</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div class="flex flex-col gap-2 md:col-span-2">
+      <div class="space-y-6 md:space-y-8 animate-rise stagger-1">
+        <h2 class="font-label-caps text-label-caps text-primary uppercase tracking-widest border-b border-outline-variant pb-2">Bill To</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8">
+          <div class="flex flex-col gap-2 sm:col-span-2">
             <label class="font-label-caps text-label-caps text-on-surface-variant uppercase">Select Client</label>
             <select
               v-model="form.clientId"
@@ -369,7 +380,7 @@ const clientProjects = computed(() => {
             </select>
           </div>
           
-          <div class="flex flex-col gap-2 md:col-span-2" v-if="form.clientId">
+          <div class="flex flex-col gap-2 sm:col-span-2" v-if="form.clientId">
             <label class="font-label-caps text-label-caps text-on-surface-variant uppercase">Client Name</label>
             <input v-model="form.clientName" type="text" class="input-minimal font-body-lg text-body-lg w-full pb-2" @input="triggerPulse" />
           </div>
@@ -385,18 +396,18 @@ const clientProjects = computed(() => {
       </div>
 
       <!-- Project Details -->
-      <div class="space-y-8 animate-rise stagger-2">
-        <h2 class="font-label-caps text-label-caps text-tertiary uppercase tracking-widest border-b border-outline-variant pb-2">Project Details</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div class="flex flex-col gap-2 md:col-span-2">
+      <div class="space-y-6 md:space-y-8 animate-rise stagger-2">
+        <h2 class="font-label-caps text-label-caps text-primary uppercase tracking-widest border-b border-outline-variant pb-2">Project Details</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8">
+          <div class="flex flex-col gap-2 sm:col-span-2">
             <label class="font-label-caps text-label-caps text-on-surface-variant uppercase">Invoice Number</label>
             <input v-model="form.invoiceNumber" type="text" class="input-minimal font-body-lg text-body-lg w-full pb-2" @input="triggerPulse" />
           </div>
-          <div class="flex flex-col gap-2 md:col-span-2">
+          <div class="flex flex-col gap-2 sm:col-span-2">
             <label class="font-label-caps text-label-caps text-on-surface-variant uppercase">Agency Name</label>
             <input v-model="form.agencyName" type="text" class="input-minimal font-body-lg text-body-lg w-full pb-2" @input="triggerPulse" />
           </div>
-          <div class="flex flex-col gap-2 md:col-span-2">
+          <div class="flex flex-col gap-2 sm:col-span-2">
             <label class="font-label-caps text-label-caps text-on-surface-variant uppercase">Project Name (Optional)</label>
             <select
               v-model="form.projectId"
@@ -430,75 +441,139 @@ const clientProjects = computed(() => {
       </div>
 
       <!-- Line Items -->
-      <div class="space-y-6 animate-rise stagger-3">
-        <h2 class="font-label-caps text-label-caps text-tertiary uppercase tracking-widest border-b border-outline-variant pb-2">Line Items</h2>
-        <div class="space-y-4">
+      <div class="space-y-4 md:space-y-6 animate-rise stagger-3">
+        <h2 class="font-label-caps text-label-caps text-primary uppercase tracking-widest border-b border-outline-variant pb-2">Line Items</h2>
+
+        <!-- Column headers — only show on sm+ screens -->
+        <div class="hidden sm:grid grid-cols-12 gap-3 mb-1">
+          <div class="col-span-6 font-label-caps text-label-caps text-on-surface-variant uppercase text-[10px]">Description</div>
+          <div class="col-span-2 font-label-caps text-label-caps text-on-surface-variant uppercase text-[10px]">Qty</div>
+          <div class="col-span-2 font-label-caps text-label-caps text-on-surface-variant uppercase text-[10px]">Rate</div>
+          <div class="col-span-2 font-label-caps text-label-caps text-on-surface-variant uppercase text-[10px] text-right">Amount</div>
+        </div>
+
+        <div class="space-y-3">
           <div
             v-for="(item, index) in form.lineItems"
             :key="item.id"
-            class="grid grid-cols-12 gap-4 items-end border-b border-surface-variant pb-4 group relative line-item-row"
+            class="line-item-row border border-outline-variant/30 sm:border-0 sm:border-b sm:border-surface-variant pb-3 rounded-sm sm:rounded-none p-3 sm:p-0"
           >
-            <div class="col-span-12 md:col-span-6 flex flex-col gap-2">
-              <label class="font-label-caps text-label-caps text-on-surface-variant uppercase" :class="{'md:opacity-100': index === 0, 'opacity-0 h-0 overflow-hidden md:h-auto': index !== 0}">Description</label>
-              <input
-                v-model="item.description"
-                type="text"
-                placeholder="Item Description"
-                class="input-minimal font-body-md text-body-md w-full pb-1 item-desc"
-                @input="triggerPulse"
-              />
+            <!-- Mobile layout: stacked -->
+            <div class="sm:hidden space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="font-label-caps text-label-caps text-on-surface-variant uppercase text-[9px]">Item {{ index + 1 }}</span>
+                <button
+                  v-if="form.lineItems.length > 1"
+                  @click="removeLineItem(index)"
+                  class="text-outline hover:text-error transition-colors p-1 -mr-1"
+                >
+                  <span class="material-symbols-outlined text-[18px]">close</span>
+                </button>
+              </div>
+              <div class="flex flex-col gap-1.5">
+                <label class="font-label-caps text-label-caps text-on-surface-variant uppercase text-[9px]">Description</label>
+                <input
+                  v-model="item.description"
+                  type="text"
+                  placeholder="Item Description"
+                  class="input-minimal font-body-md text-body-md w-full pb-1 item-desc min-w-0"
+                  @input="triggerPulse"
+                />
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="flex flex-col gap-1.5">
+                  <label class="font-label-caps text-label-caps text-on-surface-variant uppercase text-[9px]">Qty</label>
+                  <input
+                    v-model="item.qty"
+                    type="number"
+                    step="any"
+                    class="input-minimal font-body-md text-body-md w-full pb-1 item-qty min-w-0"
+                    @input="triggerPulse"
+                  />
+                </div>
+                <div class="flex flex-col gap-1.5">
+                  <label class="font-label-caps text-label-caps text-on-surface-variant uppercase text-[9px]">Rate ($)</label>
+                  <input
+                    v-model="item.rate"
+                    type="number"
+                    step="any"
+                    class="input-minimal font-body-md text-body-md w-full pb-1 item-rate min-w-0"
+                    @input="triggerPulse"
+                  />
+                </div>
+              </div>
+              <div class="flex justify-between items-end pt-2 border-t border-outline-variant/30 mt-1">
+                <label class="font-label-caps text-label-caps text-on-surface-variant uppercase text-[9px]">Amount</label>
+                <div class="font-headline-sm text-headline-sm text-on-surface item-amount">
+                  <span class="mr-0.5 font-body-md font-medium tracking-normal text-[0.8em] relative -top-[0.05em]">$</span>{{ getLineAmount(item).toFixed(2) }}
+                </div>
+              </div>
             </div>
-            <div class="col-span-4 md:col-span-2 flex flex-col gap-2">
-              <label class="font-label-caps text-label-caps text-on-surface-variant uppercase" :class="{'md:opacity-100': index === 0, 'opacity-0 h-0 overflow-hidden md:h-auto': index !== 0}">Qty</label>
-              <input
-                v-model="item.qty"
-                type="number"
-                step="any"
-                class="input-minimal font-body-md text-body-md w-full pb-1 item-qty"
-                @input="triggerPulse"
-              />
+
+            <!-- Desktop layout: grid row -->
+            <div class="hidden sm:grid grid-cols-12 gap-3 items-end relative group">
+              <div class="col-span-6 flex flex-col gap-1">
+                <input
+                  v-model="item.description"
+                  type="text"
+                  placeholder="Item Description"
+                  class="input-minimal font-body-md text-body-md w-full pb-1 item-desc min-w-0"
+                  @input="triggerPulse"
+                />
+              </div>
+              <div class="col-span-2 flex flex-col gap-1">
+                <input
+                  v-model="item.qty"
+                  type="number"
+                  step="any"
+                  class="input-minimal font-body-md text-body-md w-full pb-1 item-qty min-w-0"
+                  @input="triggerPulse"
+                />
+              </div>
+              <div class="col-span-2 flex flex-col gap-1">
+                <input
+                  v-model="item.rate"
+                  type="number"
+                  step="any"
+                  class="input-minimal font-body-md text-body-md w-full pb-1 item-rate min-w-0"
+                  @input="triggerPulse"
+                />
+              </div>
+              <div class="col-span-2 flex flex-col gap-1 text-right">
+                <div class="font-headline-sm text-headline-sm text-on-surface pb-1 item-amount">
+                  <span class="mr-0.5 font-body-md font-medium tracking-normal text-[0.8em] relative -top-[0.05em]">$</span>{{ getLineAmount(item).toFixed(2) }}
+                </div>
+              </div>
+              <!-- Remove button: visible on hover, inside the row (no overflow) -->
+              <button
+                v-if="form.lineItems.length > 1"
+                @click="removeLineItem(index)"
+                class="absolute -right-6 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-outline hover:text-error"
+              >
+                <span class="material-symbols-outlined text-[18px]">close</span>
+              </button>
             </div>
-            <div class="col-span-4 md:col-span-2 flex flex-col gap-2">
-              <label class="font-label-caps text-label-caps text-on-surface-variant uppercase" :class="{'md:opacity-100': index === 0, 'opacity-0 h-0 overflow-hidden md:h-auto': index !== 0}">Rate</label>
-              <input
-                v-model="item.rate"
-                type="number"
-                step="any"
-                class="input-minimal font-body-md text-body-md w-full pb-1 item-rate"
-                @input="triggerPulse"
-              />
-            </div>
-            <div class="col-span-4 md:col-span-2 flex flex-col gap-2 text-right">
-              <label class="font-label-caps text-label-caps text-on-surface-variant uppercase" :class="{'md:opacity-100': index === 0, 'opacity-0 h-0 overflow-hidden md:h-auto': index !== 0}">Amount</label>
-              <div class="font-headline-sm text-headline-sm text-on-surface pb-1 item-amount"><span class="mr-0.5 font-body-md font-medium tracking-normal text-[0.8em] relative -top-[0.05em]">$</span>{{ getLineAmount(item).toFixed(2) }}</div>
-            </div>
-            <button
-              v-if="form.lineItems.length > 1"
-              @click="removeLineItem(index)"
-              class="absolute -right-8 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-outline hover:text-error"
-            >
-              <span class="material-symbols-outlined">close</span>
-            </button>
           </div>
         </div>
 
-        <div class="mt-6 flex items-center gap-4">
+        <!-- Action row: wrap on small screens -->
+        <div class="mt-4 md:mt-6 flex flex-wrap items-center gap-3">
           <button
             @click="addLineItem"
-            class="flex items-center gap-2 text-on-surface-variant hover-cinematic hover:text-tertiary font-label-caps text-label-caps uppercase border border-outline-variant hover:border-tertiary px-6 py-3"
+            class="flex items-center gap-2 text-on-surface-variant hover-cinematic hover:text-primary font-label-caps text-label-caps uppercase border border-outline-variant hover:border-primary px-4 md:px-6 py-2.5 md:py-3 text-xs"
           >
-            <span class="material-symbols-outlined text-[18px]">add</span> Add Line Item
+            <span class="material-symbols-outlined text-[16px]">add</span> Add Line Item
           </button>
           
           <button
             @click="fileInput.click()"
             :disabled="scanning"
-            class="flex items-center gap-2 text-tertiary hover-cinematic font-label-caps text-label-caps uppercase border border-tertiary/30 hover:border-tertiary bg-tertiary/5 px-6 py-3 disabled:opacity-50"
+            class="flex items-center gap-2 text-primary hover-cinematic font-label-caps text-label-caps uppercase border border-primary/30 hover:border-primary bg-primary/5 px-4 md:px-6 py-2.5 md:py-3 disabled:opacity-50 text-xs"
           >
-            <span class="material-symbols-outlined text-[18px]" :class="{ 'animate-spin': scanning }">
+            <span class="material-symbols-outlined text-[16px]" :class="{ 'animate-spin': scanning }">
               {{ scanning ? 'autorenew' : 'document_scanner' }}
             </span> 
-            {{ scanning ? 'Scanning...' : 'AI Scan Document' }}
+            {{ scanning ? 'Scanning...' : 'AI Scan' }}
           </button>
           <input 
             type="file" 
@@ -514,11 +589,11 @@ const clientProjects = computed(() => {
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8 animate-rise stagger-3">
         <div class="space-y-4">
           <div class="flex items-center justify-between border-b border-outline-variant pb-2">
-            <h2 class="font-label-caps text-label-caps text-tertiary uppercase tracking-widest">Notes</h2>
+            <h2 class="font-label-caps text-label-caps text-primary uppercase tracking-widest">Notes</h2>
             <button
               @click="handleAutoWriteNotes"
               :disabled="autoWriting"
-              class="text-[10px] uppercase font-bold tracking-wider text-tertiary hover:text-tertiary-fixed transition-colors flex items-center gap-1 disabled:opacity-50"
+              class="text-[10px] uppercase font-bold tracking-wider text-primary hover:text-primary-fixed transition-colors flex items-center gap-1 disabled:opacity-50"
               title="AI will draft a polite note based on the line items"
             >
               <span class="material-symbols-outlined text-[14px]" :class="{ 'animate-spin': autoWriting }">
@@ -529,13 +604,13 @@ const clientProjects = computed(() => {
           </div>
           <textarea
             v-model="form.notes"
-            class="w-full bg-transparent border border-outline-variant text-on-surface font-body-md text-body-md p-4 min-h-[120px] focus:border-tertiary focus:outline-none transition-colors duration-500 resize-none placeholder-outline"
+            class="w-full bg-transparent border border-outline-variant text-on-surface font-body-md text-body-md p-4 min-h-[120px] focus:border-primary focus:outline-none transition-colors duration-500 resize-none placeholder-outline"
             placeholder="Thank you for your business. Payment is due within 30 days."
           ></textarea>
         </div>
 
         <div class="space-y-4">
-          <h2 class="font-label-caps text-label-caps text-tertiary uppercase tracking-widest border-b border-outline-variant pb-2">Tax & Extras</h2>
+          <h2 class="font-label-caps text-label-caps text-primary uppercase tracking-widest border-b border-outline-variant pb-2">Tax & Extras</h2>
           
           <div class="flex items-center justify-between border-b border-surface-variant pb-4">
             <span class="font-body-md text-body-md text-on-surface">Apply Tax</span>
@@ -544,7 +619,7 @@ const clientProjects = computed(() => {
                 v-model="form.taxEnabled"
                 type="checkbox"
                 id="toggle-tax"
-                class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-primary-container border-2 border-outline-variant appearance-none cursor-pointer checked:right-0 checked:border-tertiary checked:bg-tertiary hover-cinematic"
+                class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-primary-container border-2 border-outline-variant appearance-none cursor-pointer checked:right-0 checked:border-primary checked:bg-primary hover-cinematic"
                 @change="triggerPulse"
               />
               <label
@@ -567,25 +642,61 @@ const clientProjects = computed(() => {
         </div>
       </div>
 
+      <!-- Mobile: Totals summary (since preview is hidden by default) -->
+      <div class="lg:hidden bg-surface-variant/30 border border-outline-variant p-5 space-y-3 animate-rise">
+        <h2 class="font-label-caps text-label-caps text-primary uppercase tracking-widest border-b border-outline-variant pb-2 mb-4">Summary</h2>
+        <div class="flex justify-between text-sm text-on-surface-variant">
+          <span>Subtotal</span>
+          <span class="font-medium text-on-surface">${{ subtotal.toFixed(2) }}</span>
+        </div>
+        <div v-if="form.taxEnabled" class="flex justify-between text-sm text-on-surface-variant">
+          <span>Tax ({{ form.taxRate }}%)</span>
+          <span class="font-medium text-on-surface">${{ taxAmount.toFixed(2) }}</span>
+        </div>
+        <div class="flex justify-between pt-3 border-t border-outline-variant">
+          <span class="font-label-caps text-label-caps text-primary uppercase tracking-widest">Total Due</span>
+          <span class="font-headline-sm text-headline-sm text-primary">${{ total.toFixed(2) }}</span>
+        </div>
+      </div>
+
+      <!-- Mobile: Save/Send action bar at bottom of form -->
+      <div class="lg:hidden flex flex-col sm:flex-row gap-3 no-print pb-4">
+        <button
+          @click="saveInvoice('draft')"
+          :disabled="saving"
+          class="flex-1 text-on-surface-variant hover-cinematic hover:text-primary font-label-caps text-label-caps uppercase border border-outline-variant hover:border-primary py-3 text-center disabled:opacity-50"
+        >
+          Save as Draft
+        </button>
+        <button
+          @click="saveInvoice('sent')"
+          :disabled="saving"
+          class="flex-1 bg-primary text-on-primary font-label-caps text-label-caps uppercase py-3 hover:bg-primary-fixed hover-cinematic flex items-center justify-center gap-2 disabled:opacity-50"
+        >
+          <span class="material-symbols-outlined text-[18px]">send</span>
+          {{ saving ? 'Sending...' : 'Send Invoice' }}
+        </button>
+      </div>
+
     </div>
   </section>
 
-  <!-- RIGHT PANEL: Live Preview -->
-  <section class="w-full md:w-[45%] h-full bg-[#10131f] border-l border-outline-variant hidden md:flex flex-col relative z-0 no-print">
+  <!-- RIGHT PANEL: Live Preview (desktop only) -->
+  <section class="w-full lg:w-[45%] lg:h-full bg-[#10131f] border-l border-outline-variant hidden lg:flex flex-col relative z-0 no-print">
     <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5 pointer-events-none"></div>
-    <div class="flex-grow p-8 flex items-center justify-center overflow-y-auto custom-scrollbar">
+    <div class="flex-grow p-6 lg:p-8 flex items-center justify-center overflow-y-auto custom-scrollbar">
       
       <!-- "Printed" Invoice Canvas -->
-      <div id="invoice-preview" class="w-full max-w-lg bg-[#F5F2EB] shadow-2xl p-12 text-[#0A0A0F] relative transition-all duration-300" :class="{ 'pulse-preview': isPulsing }">
-        <div class="flex justify-between items-start mb-16">
+      <div id="invoice-preview" class="w-full max-w-lg bg-[#F5F2EB] shadow-2xl p-8 lg:p-12 text-[#0A0A0F] relative transition-all duration-300" :class="{ 'pulse-preview': isPulsing }">
+        <div class="flex justify-between items-start mb-10 lg:mb-16">
           <div class="font-headline-md text-headline-md font-bold tracking-tighter">{{ form.agencyName || 'Design Agency' }}</div>
           <div class="text-right">
-            <h2 class="font-label-caps text-label-caps text-[#C9A84C] uppercase tracking-widest mb-1">Invoice</h2>
+            <h2 class="font-label-caps text-label-caps text-primary uppercase tracking-widest mb-1">Invoice</h2>
             <div class="font-body-md text-body-md text-[#474742]">#{{ form.invoiceNumber || 'INV-0000' }}</div>
           </div>
         </div>
         
-        <div class="flex justify-between mb-16">
+        <div class="flex justify-between mb-10 lg:mb-16">
           <div>
             <div class="font-label-caps text-label-caps text-[#474742] uppercase tracking-widest mb-2">Billed To</div>
             <div class="font-headline-sm text-headline-sm mb-1">{{ form.clientName || 'Client Name' }}</div>
@@ -606,7 +717,7 @@ const clientProjects = computed(() => {
           </div>
         </div>
 
-        <table class="w-full mb-12 border-collapse">
+        <table class="w-full mb-8 lg:mb-12 border-collapse">
           <thead>
             <tr class="border-b-2 border-[#0A0A0F]">
               <th class="text-left font-label-caps text-label-caps text-[#0A0A0F] uppercase tracking-widest py-3">Description</th>
@@ -617,10 +728,10 @@ const clientProjects = computed(() => {
           </thead>
           <tbody class="font-body-md text-body-md">
             <tr v-for="(item, index) in form.lineItems" :key="index" class="border-b border-[#E8E4DC]">
-              <td class="py-4">{{ item.description || ' ' }}</td>
-              <td class="py-4 text-right">{{ item.qty }}</td>
-              <td class="py-4 text-right">${{ Number(item.rate || 0).toFixed(2) }}</td>
-              <td class="py-4 text-right">${{ getLineAmount(item).toFixed(2) }}</td>
+              <td class="py-3">{{ item.description || ' ' }}</td>
+              <td class="py-3 text-right">{{ item.qty }}</td>
+              <td class="py-3 text-right">${{ Number(item.rate || 0).toFixed(2) }}</td>
+              <td class="py-3 text-right">${{ getLineAmount(item).toFixed(2) }}</td>
             </tr>
           </tbody>
         </table>
@@ -635,7 +746,7 @@ const clientProjects = computed(() => {
               <span>Tax ({{ form.taxRate }}%)</span>
               <span>${{ taxAmount.toFixed(2) }}</span>
             </div>
-            <div class="flex justify-between py-4 font-headline-sm text-headline-sm text-[#C9A84C]">
+            <div class="flex justify-between py-4 font-headline-sm text-headline-sm text-primary">
               <span>Total Due</span>
               <span><span class="mr-0.5 font-body-md font-medium tracking-normal text-[0.8em] relative -top-[0.05em]">$</span>{{ total.toFixed(2) }}</span>
             </div>
@@ -649,12 +760,113 @@ const clientProjects = computed(() => {
     </div>
 
     <!-- Action Bar -->
-    <div class="h-24 bg-surface/90 backdrop-blur-md border-t border-outline-variant flex items-center justify-end px-8 z-10 no-print">
-      <button @click="handlePrint" class="bg-[#C9A84C] text-[#0A0A0F] font-label-caps text-label-caps uppercase px-8 py-4 hover:bg-[#e6c364] hover-cinematic flex items-center gap-2">
+    <div class="h-20 lg:h-24 bg-surface/90 backdrop-blur-md border-t border-outline-variant flex items-center justify-end px-6 lg:px-8 z-10 no-print">
+      <button @click="handlePrint" class="btn-accent text-[#0A0A0F] font-label-caps text-label-caps uppercase px-6 lg:px-8 py-3 lg:py-4 hover-cinematic flex items-center gap-2">
         <span class="material-symbols-outlined text-[18px]">download</span> Download PDF
       </button>
     </div>
   </section>
+
+  <!-- MOBILE PREVIEW SHEET (slide up from bottom on mobile) -->
+  <Teleport to="body">
+    <div
+      v-if="showMobilePreview"
+      class="lg:hidden fixed inset-0 z-[999] flex flex-col"
+    >
+      <!-- Backdrop -->
+      <div class="absolute inset-0 bg-background/80 backdrop-blur-sm" @click="showMobilePreview = false"></div>
+      
+      <!-- Sheet -->
+      <div class="relative mt-auto bg-[#10131f] border-t border-outline-variant flex flex-col max-h-[92vh] rounded-t-2xl overflow-hidden animate-slide-up">
+        <!-- Sheet handle & header -->
+        <div class="flex items-center justify-between px-5 py-4 border-b border-outline-variant flex-shrink-0">
+          <div>
+            <div class="text-[9px] uppercase tracking-widest text-on-surface-variant font-semibold">Invoice Preview</div>
+            <div class="text-xs font-medium text-on-surface mt-0.5">{{ form.invoiceNumber }}</div>
+          </div>
+          <div class="flex items-center gap-3">
+            <button @click="handlePrint" class="btn-accent text-[#0A0A0F] font-label-caps text-label-caps uppercase px-4 py-2 text-xs hover-cinematic flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[14px]">download</span> PDF
+            </button>
+            <button @click="showMobilePreview = false" class="text-on-surface-variant hover:text-on-surface transition-colors">
+              <span class="material-symbols-outlined">close</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Scrollable preview content -->
+        <div class="flex-1 overflow-y-auto custom-scrollbar p-4">
+          <div class="bg-[#F5F2EB] p-6 text-[#0A0A0F] mx-auto max-w-lg" :class="{ 'pulse-preview': isPulsing }">
+            <div class="flex justify-between items-start mb-8">
+              <div class="font-headline-md text-headline-md font-bold tracking-tighter text-sm">{{ form.agencyName || 'Design Agency' }}</div>
+              <div class="text-right">
+                <h2 class="font-label-caps text-label-caps text-primary uppercase tracking-widest mb-1 text-[10px]">Invoice</h2>
+                <div class="text-xs text-[#474742]">#{{ form.invoiceNumber || 'INV-0000' }}</div>
+              </div>
+            </div>
+            
+            <div class="flex justify-between mb-8">
+              <div>
+                <div class="text-[9px] text-[#474742] uppercase tracking-widest mb-1">Billed To</div>
+                <div class="text-sm font-semibold mb-0.5">{{ form.clientName || 'Client Name' }}</div>
+                <div class="text-xs text-[#474742]">
+                  {{ form.clientCompany || 'Company' }}<br/>
+                  {{ form.clientEmail || 'email@example.com' }}
+                </div>
+              </div>
+              <div class="text-right">
+                <div class="mb-3">
+                  <div class="text-[9px] text-[#474742] uppercase tracking-widest mb-0.5">Issue Date</div>
+                  <div class="text-xs">{{ formattedIssueDate }}</div>
+                </div>
+                <div>
+                  <div class="text-[9px] text-[#474742] uppercase tracking-widest mb-0.5">Due Date</div>
+                  <div class="text-xs">{{ formattedDueDate }}</div>
+                </div>
+              </div>
+            </div>
+
+            <table class="w-full mb-6 border-collapse text-xs">
+              <thead>
+                <tr class="border-b-2 border-[#0A0A0F]">
+                  <th class="text-left uppercase tracking-wider py-2 text-[9px]">Description</th>
+                  <th class="text-right uppercase tracking-wider py-2 text-[9px]">Qty</th>
+                  <th class="text-right uppercase tracking-wider py-2 text-[9px]">Rate</th>
+                  <th class="text-right uppercase tracking-wider py-2 text-[9px]">Amt</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(item, index) in form.lineItems" :key="index" class="border-b border-[#E8E4DC]">
+                  <td class="py-2">{{ item.description || ' ' }}</td>
+                  <td class="py-2 text-right">{{ item.qty }}</td>
+                  <td class="py-2 text-right">${{ Number(item.rate || 0).toFixed(2) }}</td>
+                  <td class="py-2 text-right">${{ getLineAmount(item).toFixed(2) }}</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="flex justify-end">
+              <div class="w-1/2 space-y-1.5">
+                <div class="flex justify-between text-xs text-[#474742]">
+                  <span>Subtotal</span><span>${{ subtotal.toFixed(2) }}</span>
+                </div>
+                <div v-if="form.taxEnabled" class="flex justify-between text-xs text-[#474742] border-b border-[#E8E4DC] pb-1.5">
+                  <span>Tax ({{ form.taxRate }}%)</span><span>${{ taxAmount.toFixed(2) }}</span>
+                </div>
+                <div class="flex justify-between pt-2 font-semibold text-primary text-sm">
+                  <span>Total Due</span><span>${{ total.toFixed(2) }}</span>
+                </div>
+              </div>
+            </div>
+            
+            <div v-if="form.notes" class="mt-6 pt-3 border-t border-[#E8E4DC] text-[10px] text-[#474742]">
+              {{ form.notes }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Teleport>
 
   <!-- SEND CONFIRMATION MODAL -->
   <Teleport to="body">
@@ -662,8 +874,8 @@ const clientProjects = computed(() => {
       v-if="isSendSuccessOpen"
       class="fixed inset-0 bg-background/80 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
     >
-      <div class="bg-surface-container border border-outline-variant p-12 text-center flex flex-col gap-6 shadow-2xl max-w-md w-full animate-rise">
-        <div class="w-16 h-16 rounded-full bg-tertiary/10 border border-tertiary/30 text-tertiary flex items-center justify-center mx-auto">
+      <div class="bg-surface-container border border-outline-variant p-8 md:p-12 text-center flex flex-col gap-6 shadow-2xl max-w-md w-full animate-rise">
+        <div class="w-16 h-16 rounded-full bg-primary/10 border border-primary/30 text-primary flex items-center justify-center mx-auto">
           <span class="material-symbols-outlined text-2xl">mark_email_read</span>
         </div>
         <div>
@@ -674,7 +886,7 @@ const clientProjects = computed(() => {
         </div>
         <button
           @click="isSendSuccessOpen = false; router.push('/app/invoices')"
-          class="bg-tertiary text-on-tertiary font-label-caps text-label-caps uppercase py-4 hover:bg-tertiary-fixed hover-cinematic w-full mt-4"
+          class="bg-primary text-on-primary font-label-caps text-label-caps uppercase py-4 hover:bg-primary-fixed hover-cinematic w-full mt-4"
         >
           Go to Invoices
         </button>
@@ -687,7 +899,7 @@ const clientProjects = computed(() => {
     <div class="flex justify-between items-start mb-16">
       <div class="font-headline-md text-headline-md font-bold tracking-tighter">{{ form.agencyName || 'Design Agency' }}</div>
       <div class="text-right">
-        <h2 class="font-label-caps text-label-caps text-[#C9A84C] uppercase tracking-widest mb-1">Invoice</h2>
+        <h2 class="font-label-caps text-label-caps text-primary uppercase tracking-widest mb-1">Invoice</h2>
         <div class="font-body-md text-body-md text-[#474742]">#{{ form.invoiceNumber || 'INV-0000' }}</div>
       </div>
     </div>
@@ -742,7 +954,7 @@ const clientProjects = computed(() => {
           <span>Tax ({{ form.taxRate }}%)</span>
           <span>${{ taxAmount.toFixed(2) }}</span>
         </div>
-        <div class="flex justify-between py-4 font-headline-sm text-headline-sm text-[#C9A84C]">
+        <div class="flex justify-between py-4 font-headline-sm text-headline-sm text-primary">
           <span>Total Due</span>
           <span><span class="mr-0.5 font-body-md font-medium tracking-normal text-[0.8em] relative -top-[0.05em]">$</span>{{ total.toFixed(2) }}</span>
         </div>
@@ -757,7 +969,7 @@ const clientProjects = computed(() => {
 </template>
 
 <style scoped>
-/* Scoped styles specific to invoice builder that aren't global */
+/* Scoped styles specific to invoice builder */
 .animate-rise {
     animation: rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     opacity: 0;
@@ -792,7 +1004,7 @@ const clientProjects = computed(() => {
 }
 .input-minimal:focus {
     outline: none;
-    border-bottom-color: #C9A84C;
+    border-bottom-color: var(--color-primary);
     box-shadow: none;
 }
 .input-minimal::placeholder {
@@ -811,8 +1023,20 @@ const clientProjects = computed(() => {
     padding-top: 0.5rem;
 }
 
+/* Mobile preview sheet slide-up animation */
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+.animate-slide-up {
+  animation: slide-up 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
 @media print {
-  /* Reset viewport and wrap layout elements for proper print flow */
   html, body, #app, .min-h-screen, main, .flex-grow, .flex-1 {
     height: auto !important;
     min-height: 0 !important;
@@ -822,18 +1046,15 @@ const clientProjects = computed(() => {
     box-shadow: none !important;
   }
 
-  /* Hide non-printable elements using display:none to prevent blank pages */
   .no-print,
   .no-print * {
     display: none !important;
   }
 
-  /* Hide the editor and live preview sections */
   section {
     display: none !important;
   }
 
-  /* Reset the container wrapper */
   .h-\[calc\(100vh-80px\)\] {
     height: auto !important;
     overflow: visible !important;
@@ -841,7 +1062,6 @@ const clientProjects = computed(() => {
     margin: 0 !important;
   }
 
-  /* Ensure the printable invoice flows naturally without absolute positioning constraints */
   .print-only-invoice {
     display: block !important;
     position: static !important;

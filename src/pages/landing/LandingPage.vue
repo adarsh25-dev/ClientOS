@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-background text-on-surface antialiased overflow-x-clip min-h-screen flex flex-col relative">
+  <div class="dark bg-background text-on-surface antialiased overflow-x-clip min-h-screen flex flex-col relative">
 
     <LandingTopNav />
     <LandingHero />

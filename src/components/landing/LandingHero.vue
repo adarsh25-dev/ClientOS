@@ -13,7 +13,7 @@
             </h1>
             
             <div class="mt-stack-md flex items-center opacity-0 animate-fade-in-up" style="animation-delay: 800ms; animation-fill-mode: forwards;">
-                <router-link to="/signup" class="inline-flex items-center justify-center font-label-sm text-label-sm uppercase tracking-[0.1em] border border-primary text-primary px-8 py-4 hover:bg-primary hover:text-[#0A0A0F] transition-all duration-400 ease-out" style="transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);">
+                <router-link to="/signup" class="inline-flex items-center justify-center font-label-sm text-label-sm uppercase tracking-[0.1em] border border-[#252321] text-[rgba(208,197,178,0.6)] px-8 py-4 hover:bg-[#252321] hover:text-[#0A0A0F] transition-all duration-400 ease-out" style="transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);">
                     Get Early Access
                 </router-link>
             </div>
@@ -21,16 +21,16 @@
         
         <!-- Right: Mockup (45%) -->
         <div class="w-full md:w-[45%] mt-stack-lg md:mt-0 perspective-[1000px] flex justify-end">
-            <div class="hero-mockup mockup-shadow bg-surface-container/80 backdrop-blur-sm border border-outline-variant rounded-none p-stack-md w-full max-w-[500px]" ref="heroMockup">
+            <div class="hero-mockup mockup-shadow bg-surface-container/80 backdrop-blur-sm border border-[#252321] rounded-none p-stack-md w-full max-w-[500px]" ref="heroMockup">
                 <!-- Mockup Header -->
-                <div class="flex justify-between items-center border-b border-outline-variant/50 pb-stack-sm mb-stack-md">
+                <div class="flex justify-between items-center border-b border-[#252321] pb-stack-sm mb-stack-md">
                     <div class="flex items-center gap-2">
                         <span class="material-symbols-outlined text-primary text-[20px]">dataset</span>
-                        <span class="font-label-sm text-label-sm uppercase text-on-surface-variant">Portfolio Overview</span>
+                        <span class="font-label-sm text-label-sm uppercase text-[rgba(208,197,178,0.6)]">Portfolio Overview</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <div class="h-2 w-2 rounded-full bg-[#4A5C4E]"></div>
-                        <span class="font-label-sm text-[10px] uppercase text-on-surface-variant tracking-wider">Live Sync</span>
+                        <span class="font-label-sm text-[10px] uppercase text-[rgba(208,197,178,0.6)] tracking-wider">Live Sync</span>
                     </div>
                 </div>
                 
@@ -38,7 +38,7 @@
                 <div class="flex flex-col gap-stack-md">
                     <div class="flex items-end justify-between">
                         <div>
-                            <div class="font-label-sm text-[10px] uppercase text-outline mb-1">Total Assets managed</div>
+                            <div class="font-label-sm text-[10px] uppercase text-[rgba(208,197,178,0.6)] mb-1">Total Assets managed</div>
                             <div class="font-headline-lg text-headline-lg text-on-surface">$142.5M</div>
                         </div>
                         <div class="text-[#4A5C4E] font-label-sm flex items-center gap-1">
@@ -49,28 +49,28 @@
                     
                     <!-- Progress Section -->
                     <div>
-                        <div class="flex justify-between font-label-sm text-[10px] text-on-surface-variant mb-2">
+                        <div class="flex justify-between font-label-sm text-[10px] text-[rgba(208,197,178,0.6)] mb-2">
                             <span>Quarterly Target</span>
                             <span>85%</span>
                         </div>
-                        <div class="h-[2px] w-full bg-surface-container-high relative">
+                        <div class="h-[2px] w-full bg-[#252321] relative">
                             <div class="absolute left-0 top-0 h-full bg-primary w-[85%]"></div>
                         </div>
                     </div>
                     
                     <!-- Client List Snippet -->
                     <div class="mt-stack-sm flex flex-col gap-3">
-                        <div class="flex items-center justify-between py-2 border-b border-outline-variant/30">
+                        <div class="flex items-center justify-between py-2 border-b border-[#252321]">
                             <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center text-primary font-label-sm">EH</div>
+                                <div class="w-8 h-8 rounded-full bg-surface-container-high border border-[#252321] flex items-center justify-center text-primary font-label-sm">EH</div>
                                 <span class="font-body-md text-sm text-on-surface">Evelyn Harper</span>
                             </div>
-                            <div class="font-body-md text-sm text-on-surface-variant">Awaiting Sig</div>
+                            <div class="font-body-md text-sm text-[rgba(208,197,178,0.6)]">Awaiting Sig</div>
                         </div>
                         
-                        <div class="flex items-center justify-between py-2 border-b border-outline-variant/30">
+                        <div class="flex items-center justify-between py-2 border-b border-[#252321]">
                             <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center text-primary font-label-sm">MW</div>
+                                <div class="w-8 h-8 rounded-full bg-surface-container-high border border-[#252321] flex items-center justify-center text-primary font-label-sm">MW</div>
                                 <span class="font-body-md text-sm text-on-surface">Marcus Webb</span>
                             </div>
                             <div class="font-body-md text-sm text-[#4A5C4E]">Completed</div>
@@ -82,28 +82,28 @@
     </div>
     
     <!-- Infinite Ticker Bottom -->
-    <div class="absolute bottom-0 left-0 w-full border-t border-outline-variant/20 overflow-hidden py-4 bg-surface/50 backdrop-blur-sm">
+    <div class="absolute bottom-0 left-0 w-full border-t border-[#252321] overflow-hidden py-4 bg-surface/50 backdrop-blur-sm">
         <div class="flex w-[200%] animate-infinite-scroll">
-            <div class="flex w-1/2 justify-around items-center font-label-sm text-label-sm uppercase tracking-[0.2em] text-on-surface-variant/60">
+            <div class="flex w-1/2 justify-around items-center font-label-sm text-label-sm uppercase tracking-[0.2em] text-[rgba(208,197,178,0.6)]">
                 <span>Metanoia</span>
-                <span class="w-1 h-1 rounded-full bg-primary/30"></span>
+                <span class="w-1 h-1 rounded-full bg-[#252321]"></span>
                 <span>Aether</span>
-                <span class="w-1 h-1 rounded-full bg-primary/30"></span>
+                <span class="w-1 h-1 rounded-full bg-[#252321]"></span>
                 <span>Vanguard</span>
-                <span class="w-1 h-1 rounded-full bg-primary/30"></span>
+                <span class="w-1 h-1 rounded-full bg-[#252321]"></span>
                 <span>Elysium</span>
-                <span class="w-1 h-1 rounded-full bg-primary/30"></span>
+                <span class="w-1 h-1 rounded-full bg-[#252321]"></span>
                 <span>Aura</span>
             </div>
-            <div class="flex w-1/2 justify-around items-center font-label-sm text-label-sm uppercase tracking-[0.2em] text-on-surface-variant/60">
+            <div class="flex w-1/2 justify-around items-center font-label-sm text-label-sm uppercase tracking-[0.2em] text-[rgba(208,197,178,0.6)]">
                 <span>Metanoia</span>
-                <span class="w-1 h-1 rounded-full bg-primary/30"></span>
+                <span class="w-1 h-1 rounded-full bg-[#252321]"></span>
                 <span>Aether</span>
-                <span class="w-1 h-1 rounded-full bg-primary/30"></span>
+                <span class="w-1 h-1 rounded-full bg-[#252321]"></span>
                 <span>Vanguard</span>
-                <span class="w-1 h-1 rounded-full bg-primary/30"></span>
+                <span class="w-1 h-1 rounded-full bg-[#252321]"></span>
                 <span>Elysium</span>
-                <span class="w-1 h-1 rounded-full bg-primary/30"></span>
+                <span class="w-1 h-1 rounded-full bg-[#252321]"></span>
                 <span>Aura</span>
             </div>
         </div>

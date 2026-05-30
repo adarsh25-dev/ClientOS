@@ -3,13 +3,62 @@
 @tailwind utilities;
 
 :root {
-  background-color: #0A0A0F;
+  --color-primary: #c9a84c; /* Default brand accent — overridden at runtime by user's brand_color */
+  background-color: var(--custom-bg-main, #0A0A0F);
+
+  /* Light mode variables (default) */
+  --custom-bg-main: #FAF9F5;
+  --custom-bg-sidebar: #F4F2EB;
+  --custom-bg-card: #FFFFFF;
+  --custom-border: #E4E1D8;
+  --custom-hover: #EDEAE1;
+  --custom-muted: #8D897E;
+  --bg-background: #FAF9F5;
+  --on-background: #1B1A14;
+  --on-surface: #1B1A14;
+  --on-surface-variant: #5C584E;
+
+  --surface-container-high: #EAE6DF;
+  --surface-bright: #F9F8F5;
+  --surface-container-lowest: #FFFFFF;
+  --surface-dim: #D5D1CA;
+  --surface-container-highest: #E0DCD4;
+  --surface-variant: #E4E1D8;
+  --surface: #FAF9F5;
+  --outline-variant: #CFCBC2;
+  --surface-container-low: #F3EFE9;
+  --surface-container: #F0EDE6;
+}
+
+/* Dark mode class overrides */
+html.dark, .dark {
+  --custom-bg-main: #0F0F18;
+  --custom-bg-sidebar: #0D0D14;
+  --custom-bg-card: #16161F;
+  --custom-border: #1E2030;
+  --custom-hover: #1A1A25;
+  --custom-muted: #5A5A70;
+  --bg-background: #131318;
+  --on-background: #e5e2db;
+  --on-surface: #e4e1e9;
+  --on-surface-variant: #d0c5b2;
+
+  --surface-container-high: #2a2a26;
+  --surface-bright: #3a3935;
+  --surface-container-lowest: #0e0e0b;
+  --surface-dim: #131318;
+  --surface-container-highest: #353530;
+  --surface-variant: #35343a;
+  --surface: #131318;
+  --outline-variant: #4d4637;
+  --surface-container-low: #1c1c18;
+  --surface-container: #20201c;
 }
 
 body {
   margin: 0;
-  background-color: #0A0A0F;
-  color: #F0EDE6;
+  background-color: var(--custom-bg-main, #0A0A0F);
+  color: var(--on-surface, #F0EDE6);
   font-family: 'DM Sans', sans-serif;
   overflow-x: clip;
   -webkit-font-smoothing: antialiased;
@@ -22,14 +71,14 @@ body {
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0D0D14;
+  background: var(--custom-bg-sidebar, #0D0D14);
 }
 ::-webkit-scrollbar-thumb {
-  background: #1E2030;
+  background: var(--custom-border, #1E2030);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #C9A84C;
+  background: var(--color-primary, #c9a84c);
 }
 
 /* Utility Animations */
@@ -145,7 +194,7 @@ body {
 }
 .input-minimal:focus {
     outline: none;
-    border-bottom-color: #C9A84C;
+    border-bottom-color: var(--color-primary, #c9a84c);
     box-shadow: none;
 }
 .input-minimal::placeholder {
@@ -160,4 +209,24 @@ input::-webkit-inner-spin-button {
 }
 input[type=number] {
   -moz-appearance: textfield;
+}
+
+/* ─── Global Brand Accent Utilities ─────────────────────────────────────────
+   Use .btn-accent on any primary-colored button so hover always follows
+   the user's brand color (--color-primary) rather than a hardcoded shade.
+   ─────────────────────────────────────────────────────────────────────────── */
+.btn-accent {
+  background-color: var(--color-primary);
+  transition: opacity 0.2s ease, filter 0.2s ease;
+}
+.btn-accent:hover:not(:disabled) {
+  filter: brightness(0.82);
+}
+.btn-accent:disabled {
+  opacity: 0.5;
+}
+
+/* Accent ring/shadow that respects the CSS variable */
+.accent-shadow {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-primary) 30%, transparent);
 }

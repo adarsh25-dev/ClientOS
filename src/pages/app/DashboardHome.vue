@@ -229,7 +229,7 @@ onMounted(() => {
               class="flex gap-4 cursor-pointer hover:opacity-80 text-left"
               @click="router.push(`/app/projects/${dl.id}`)"
             >
-              <div class="w-4 h-4 rounded-full border-4 mt-1 shrink-0 z-10 shadow-[0_0_0_1px_rgba(201,168,76,0.3)]" :class="dl.due_date && new Date(dl.due_date).setHours(0,0,0,0) === new Date().setHours(0,0,0,0) ? 'bg-primary border-[#16161F]' : 'bg-surface-variant border-[#16161F]'"></div>
+              <div class="w-4 h-4 rounded-full border-4 mt-1 shrink-0 z-10 accent-shadow" :class="dl.due_date && new Date(dl.due_date).setHours(0,0,0,0) === new Date().setHours(0,0,0,0) ? 'bg-primary border-[#16161F]' : 'bg-surface-variant border-[#16161F]'"></div>
               <div>
                 <p class="font-label-caps text-[10px] text-custom-muted uppercase tracking-widest mb-1">{{ getDeadlineStyle(dl.due_date).label }}</p>
                 <h4 class="font-button text-on-surface text-sm">{{ dl.name }}</h4>

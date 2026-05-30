@@ -77,13 +77,13 @@ onMounted(() => {
 <template>
   <div class="flex flex-col gap-10 text-left">
     <!-- Project Selector Tab (Visible if client has multiple projects) -->
-    <div v-if="projects.length > 1" class="flex border-b border-[#1E2030]/60 gap-4 mb-2">
+    <div v-if="projects.length > 1" class="flex overflow-x-auto whitespace-nowrap border-b border-[#1E2030]/60 gap-4 mb-2 custom-scrollbar pb-1">
       <button
         v-for="p in projects"
         :key="p.id"
         @click="portalStore.setActiveProject(p.id)"
         class="py-2.5 text-xs font-button uppercase tracking-wider border-b-2 transition-all"
-        :class="activeProject?.id === p.id ? 'border-[#C9A84C] text-[#C9A84C]' : 'border-transparent text-[#A0A0B0] hover:text-[#F0EDE6]'"
+        :class="activeProject?.id === p.id ? 'border-primary text-primary' : 'border-transparent text-[#A0A0B0] hover:text-[#F0EDE6]'"
       >
         {{ p.name }}
       </button>
@@ -96,7 +96,7 @@ onMounted(() => {
         
         <!-- Project Status timeline -->
         <div class="bg-[#16161F] border border-[#1E2030] p-6 rounded-sm">
-          <div class="flex justify-between items-start mb-6">
+          <div class="flex flex-col sm:flex-row justify-between sm:items-start gap-4 mb-6">
             <div>
               <span class="font-label-caps text-[9px] text-[#5A5A70] uppercase tracking-widest block font-bold mb-1 font-sans">Active Project</span>
               <h3 class="font-display text-xl text-[#F0EDE6]">{{ activeProject?.name }}</h3>
@@ -110,11 +110,11 @@ onMounted(() => {
           <div class="flex flex-col gap-2.5 mb-8">
             <div class="flex justify-between text-xs font-medium">
               <span class="text-[#A0A0B0]">Milestone Completion</span>
-              <span class="text-[#C9A84C] font-semibold">{{ progressPercentage }}%</span>
+              <span class="text-primary font-semibold">{{ progressPercentage }}%</span>
             </div>
             <div class="w-full bg-[#1A1A25] h-1.5 rounded-full overflow-hidden">
               <div 
-                class="bg-[#C9A84C] h-full transition-all duration-500" 
+                class="bg-primary h-full transition-all duration-500" 
                 :style="{ width: `${progressPercentage}%` }"
               ></div>
             </div>
@@ -133,13 +133,13 @@ onMounted(() => {
               <div
                 class="w-5 h-5 rounded-full border-[2px] bg-[#16161F] flex items-center justify-center relative"
                 :class="m.status === 'completed'
-                  ? 'border-[#C9A84C] bg-[#C9A84C]'
+                  ? 'border-primary bg-primary'
                   : m.status === 'in_progress'
-                    ? 'border-[#C9A84C] scale-110 shadow-[0_0_0_4px_rgba(201,168,76,0.15)]'
+                    ? 'border-primary scale-110 ring-4 ring-primary/15'
                     : 'border-[#1E2030]'"
               >
                 <span v-if="m.status === 'completed'" class="material-symbols-outlined text-[10px] text-[#0A0A0F] font-bold">check</span>
-                <span v-else-if="m.status === 'in_progress'" class="w-1.5 h-1.5 rounded-full bg-[#C9A84C] animate-pulse"></span>
+                <span v-else-if="m.status === 'in_progress'" class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
               </div>
               <span class="text-[11px] font-medium text-[#E9E1D7] truncate max-w-[90px] mt-2.5">{{ m.title }}</span>
               <span class="text-[9px] text-[#5A5A70] mt-0.5">{{ formatDate(m.due_date) || 'TBD' }}</span>
@@ -170,10 +170,10 @@ onMounted(() => {
         <!-- File Approvals Prompt -->
         <div 
           v-if="pendingFiles.length > 0"
-          class="bg-[#16161F] border border-warning/20 border-l-[3px] border-l-[#C9A84C] p-6 rounded-sm flex flex-col gap-4 text-left"
+          class="bg-[#16161F] border border-warning/20 border-l-[3px] border-l-primary p-6 rounded-sm flex flex-col gap-4 text-left"
         >
           <div class="flex items-start gap-3">
-            <span class="material-symbols-outlined text-[#C9A84C]">rate_review</span>
+            <span class="material-symbols-outlined text-primary">rate_review</span>
             <div class="flex flex-col">
               <h4 class="text-sm font-semibold text-[#F0EDE6] font-button uppercase tracking-widest">Deliverables Awaiting Review</h4>
               <p class="text-xs text-[#A0A0B0] mt-1">You have <strong class="text-[#F0EDE6] font-semibold">{{ pendingFiles.length }} file(s)</strong> awaiting your approval.</p>
@@ -209,7 +209,7 @@ onMounted(() => {
             </div>
             <div class="flex flex-col text-right">
               <span class="text-[#5A5A70]">Amount Due</span>
-              <span class="text-[#C9A84C] font-bold font-mono">${{ latestInvoice.total }}</span>
+              <span class="text-primary font-bold font-mono">${{ latestInvoice.total }}</span>
             </div>
           </div>
 
@@ -229,7 +229,7 @@ onMounted(() => {
           <button
             v-if="latestInvoice.status !== 'paid'"
             @click="handlePayNow"
-            class="w-full bg-[#C9A84C] hover:bg-[#8A7030] text-[#0A0A0F] font-button text-xs uppercase tracking-widest py-3 rounded-sm transition-colors mt-2"
+            class="w-full btn-accent text-[#0A0A0F] font-button text-xs uppercase tracking-widest py-3 rounded-sm mt-2"
           >
             Pay Invoice
           </button>

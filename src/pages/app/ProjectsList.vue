@@ -90,14 +90,14 @@ onMounted(() => {
 <template>
   <div class="flex flex-col gap-8 text-left">
     <!-- Header -->
-    <div class="flex justify-between items-center border-b border-custom-border pb-6">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-custom-border pb-6">
       <div>
         <h2 class="font-display text-2xl text-on-surface mb-1">Projects</h2>
         <p class="font-body text-xs text-on-surface-variant">Track development pipelines, milestones, and client portals.</p>
       </div>
       <button
         @click="isAddModalOpen = true"
-        class="bg-primary hover:bg-primary-container text-on-primary font-button text-xs uppercase tracking-widest py-3 px-6 rounded-sm transition-colors flex items-center gap-2"
+        class="btn-accent text-[#0A0A0F] font-button text-xs uppercase tracking-widest py-3 px-6 rounded-sm transition-colors flex items-center gap-2"
       >
         <span class="material-symbols-outlined text-sm">add</span>
         New Project
@@ -220,7 +220,7 @@ onMounted(() => {
               <button
                 @click="handleAddProject"
                 :disabled="isSubmitting"
-                class="flex-1 bg-primary hover:bg-primary-container text-on-primary font-button text-xs uppercase tracking-widest py-3 rounded-sm transition-colors flex items-center justify-center gap-1.5"
+                class="flex-1 btn-accent text-[#0A0A0F] font-button text-xs uppercase tracking-widest py-3 rounded-sm transition-colors flex items-center justify-center gap-1.5"
               >
                 <template v-if="isSubmitting">
                   <span class="w-1.5 h-1.5 bg-on-primary rounded-full animate-bounce"></span>
