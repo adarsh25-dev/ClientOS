@@ -1,16 +1,16 @@
 <template>
-  <main class="w-full py-24 md:py-32 flex flex-col gap-16 bg-surface-container-lowest">
-    <header class="px-margin-desktop flex flex-col gap-4 max-w-[1440px] mx-auto w-full">
+  <main id="network" class="w-full py-24 md:py-32 flex flex-col gap-16 bg-surface-container-lowest">
+    <header class="px-margin-desktop flex flex-col items-center text-center gap-4 max-w-[1440px] mx-auto w-full">
         <h2 class="font-label-sm text-label-sm text-primary tracking-[0.2em] uppercase">Client Perspectives</h2>
         <h3 class="font-headline-xl text-headline-xl text-on-surface max-w-2xl">The difference between a vendor and a partner.</h3>
     </header>
     
     <!-- Carousel Container -->
-    <div class="w-full relative">
-        <div class="flex overflow-x-auto hide-scrollbar gap-gutter px-margin-desktop cursor-grab active:cursor-grabbing snap-x snap-mandatory py-4" id="testimonial-carousel" style="scroll-padding-left: var(--spacing-margin-desktop);">
+    <div class="w-full relative flex justify-center">
+        <div class="flex overflow-x-auto hide-scrollbar gap-gutter px-margin-desktop cursor-grab active:cursor-grabbing snap-x snap-mandatory py-4 max-w-full" id="testimonial-carousel">
             
             <!-- Card 1 -->
-            <article class="testimonial-card flex-shrink-0 w-[85vw] md:w-[45vw] lg:w-[38vw] max-w-[500px] bg-surface border border-outline-variant rounded-none p-8 md:p-12 flex flex-col justify-between gap-8 snap-start opacity-0 translate-x-10 transition-all duration-[600ms] ease-cinematic hover:-translate-y-2 hover:border-primary-container group">
+            <article class="testimonial-card flex-shrink-0 w-[85vw] md:w-[45vw] lg:w-[38vw] max-w-[500px] bg-surface border border-outline-variant rounded-none p-8 md:p-12 flex flex-col justify-between gap-8 snap-center opacity-0 translate-x-10 transition-all duration-[600ms] ease-cinematic hover:-translate-y-2 hover:border-primary-container group">
                 <div class="flex flex-col gap-6">
                     <span class="font-display-lg text-display-lg text-primary-container leading-none opacity-80">"</span>
                     <p class="font-headline-lg text-[22px] md:text-[24px] leading-[1.6] text-on-surface transition-colors group-hover:text-white">
@@ -27,7 +27,7 @@
             </article>
 
             <!-- Card 2 -->
-            <article class="testimonial-card flex-shrink-0 w-[85vw] md:w-[45vw] lg:w-[38vw] max-w-[500px] bg-surface border border-outline-variant rounded-none p-8 md:p-12 flex flex-col justify-between gap-8 snap-start opacity-0 translate-x-10 transition-all duration-[600ms] ease-cinematic hover:-translate-y-2 hover:border-primary-container group" style="transition-delay: 150ms;">
+            <article class="testimonial-card flex-shrink-0 w-[85vw] md:w-[45vw] lg:w-[38vw] max-w-[500px] bg-surface border border-outline-variant rounded-none p-8 md:p-12 flex flex-col justify-between gap-8 snap-center opacity-0 translate-x-10 transition-all duration-[600ms] ease-cinematic hover:-translate-y-2 hover:border-primary-container group" style="transition-delay: 150ms;">
                 <div class="flex flex-col gap-6">
                     <span class="font-display-lg text-display-lg text-primary-container leading-none opacity-80">"</span>
                     <p class="font-headline-lg text-[22px] md:text-[24px] leading-[1.6] text-on-surface transition-colors group-hover:text-white">
@@ -44,7 +44,7 @@
             </article>
 
             <!-- Card 3 -->
-            <article class="testimonial-card flex-shrink-0 w-[85vw] md:w-[45vw] lg:w-[38vw] max-w-[500px] bg-surface border border-outline-variant rounded-none p-8 md:p-12 flex flex-col justify-between gap-8 snap-start opacity-0 translate-x-10 transition-all duration-[600ms] ease-cinematic hover:-translate-y-2 hover:border-primary-container group" style="transition-delay: 300ms;">
+            <article class="testimonial-card flex-shrink-0 w-[85vw] md:w-[45vw] lg:w-[38vw] max-w-[500px] bg-surface border border-outline-variant rounded-none p-8 md:p-12 flex flex-col justify-between gap-8 snap-center opacity-0 translate-x-10 transition-all duration-[600ms] ease-cinematic hover:-translate-y-2 hover:border-primary-container group" style="transition-delay: 300ms;">
                 <div class="flex flex-col gap-6">
                     <span class="font-display-lg text-display-lg text-primary-container leading-none opacity-80">"</span>
                     <p class="font-headline-lg text-[22px] md:text-[24px] leading-[1.6] text-on-surface transition-colors group-hover:text-white">

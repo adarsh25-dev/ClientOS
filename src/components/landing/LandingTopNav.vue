@@ -5,10 +5,10 @@
         ClientOS
       </div>
       <div class="hidden md:flex gap-stack-lg">
-        <a class="font-body-md text-body-md text-on-surface-variant dark:text-on-surface-variant hover:text-primary transition-colors duration-400 ease-out" href="#platform" style="transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);">Platform</a>
-        <a class="font-body-md text-body-md text-on-surface-variant dark:text-on-surface-variant hover:text-primary transition-colors duration-400 ease-out" href="#intelligence" style="transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);">Intelligence</a>
-        <a class="font-body-md text-body-md text-on-surface-variant dark:text-on-surface-variant hover:text-primary transition-colors duration-400 ease-out" href="#network" style="transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);">Network</a>
-        <a class="font-body-md text-body-md text-on-surface-variant dark:text-on-surface-variant hover:text-primary transition-colors duration-400 ease-out" href="#pricing" style="transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);">Pricing</a>
+        <a class="font-body-md text-body-md text-on-surface-variant dark:text-on-surface-variant hover:text-primary transition-colors duration-400 ease-out cursor-pointer" @click.prevent="scrollToSection('platform')" style="transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);">Platform</a>
+        <a class="font-body-md text-body-md text-on-surface-variant dark:text-on-surface-variant hover:text-primary transition-colors duration-400 ease-out cursor-pointer" @click.prevent="scrollToSection('intelligence')" style="transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);">Intelligence</a>
+        <a class="font-body-md text-body-md text-on-surface-variant dark:text-on-surface-variant hover:text-primary transition-colors duration-400 ease-out cursor-pointer" @click.prevent="scrollToSection('network')" style="transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);">Network</a>
+        <a class="font-body-md text-body-md text-on-surface-variant dark:text-on-surface-variant hover:text-primary transition-colors duration-400 ease-out cursor-pointer" @click.prevent="scrollToSection('pricing')" style="transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);">Pricing</a>
       </div>
       <div class="flex items-center gap-6">
         <router-link to="/login" class="font-label-sm text-label-sm uppercase tracking-[0.1em] text-on-surface hover:text-primary transition-colors duration-400">Log In</router-link>
@@ -19,6 +19,14 @@
 </template>
 
 <script setup>
+const scrollToSection = (id) => {
+  const el = document.getElementById(id);
+  if (el) {
+    const navHeight = 80;
+    const top = el.getBoundingClientRect().top + window.scrollY - navHeight;
+    window.scrollTo({ top, behavior: 'smooth' });
+  }
+};
 </script>
 
 <style scoped>

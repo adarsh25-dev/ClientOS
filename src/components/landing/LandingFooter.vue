@@ -1,7 +1,7 @@
 <template>
   <main class="flex-grow bg-surface w-full">
     <!-- CTA SECTION -->
-    <section class="cta-section relative w-full min-h-[819px] flex items-center justify-center overflow-hidden py-32 is-visible bg-surface">
+    <section id="pricing" class="cta-section relative w-full min-h-[819px] flex items-center justify-center overflow-hidden py-32 is-visible bg-surface">
         <div class="cta-watermark">CLIENTOS</div>
         <div class="cta-glow"></div>
         <div class="relative z-10 flex flex-col items-center text-center px-margin-mobile md:px-margin-desktop max-w-[1000px] mx-auto">
@@ -42,10 +42,10 @@
               <div class="col-span-1 flex flex-col gap-4">
                   <h4 class="font-label-sm text-label-sm uppercase tracking-[0.2em] text-on-surface-variant mb-2">Product</h4>
                   <ul class="flex flex-col gap-3">
-                      <li class=""><a class="footer-link font-body-md text-body-md text-on-surface-variant cursor-pointer" href="#platform">Platform</a></li>
-                      <li class=""><a class="footer-link font-body-md text-body-md text-on-surface-variant cursor-pointer" href="#intelligence">Intelligence</a></li>
-                      <li class=""><a class="footer-link font-body-md text-body-md text-on-surface-variant cursor-pointer" href="#network">Network</a></li>
-                      <li class=""><a class="footer-link font-body-md text-body-md text-on-surface-variant cursor-pointer" href="#pricing">Pricing</a></li>
+                      <li class=""><a class="footer-link font-body-md text-body-md text-on-surface-variant cursor-pointer" @click.prevent="scrollToSection('platform')">Platform</a></li>
+                      <li class=""><a class="footer-link font-body-md text-body-md text-on-surface-variant cursor-pointer" @click.prevent="scrollToSection('intelligence')">Intelligence</a></li>
+                      <li class=""><a class="footer-link font-body-md text-body-md text-on-surface-variant cursor-pointer" @click.prevent="scrollToSection('network')">Network</a></li>
+                      <li class=""><a class="footer-link font-body-md text-body-md text-on-surface-variant cursor-pointer" @click.prevent="scrollToSection('pricing')">Pricing</a></li>
                   </ul>
               </div>
 
@@ -53,10 +53,10 @@
               <div class="col-span-1 flex flex-col gap-4">
                   <h4 class="font-label-sm text-label-sm uppercase tracking-[0.2em] text-on-surface-variant mb-2">Company</h4>
                   <ul class="flex flex-col gap-3">
-                      <li class=""><a class="footer-link font-body-md text-body-md text-on-surface-variant cursor-pointer" href="#about">About</a></li>
-                      <li class=""><a class="footer-link font-body-md text-body-md text-on-surface-variant cursor-pointer" href="#careers">Careers</a></li>
-                      <li class=""><a class="footer-link font-body-md text-body-md text-on-surface-variant cursor-pointer" href="#contact">Contact</a></li>
-                      <li class=""><a class="footer-link font-body-md text-body-md text-on-surface-variant cursor-pointer" href="#legal">Legal</a></li>
+                      <li class=""><a class="footer-link font-body-md text-body-md text-on-surface-variant cursor-pointer">About</a></li>
+                      <li class=""><a class="footer-link font-body-md text-body-md text-on-surface-variant cursor-pointer">Careers</a></li>
+                      <li class=""><a class="footer-link font-body-md text-body-md text-on-surface-variant cursor-pointer">Contact</a></li>
+                      <li class=""><a class="footer-link font-body-md text-body-md text-on-surface-variant cursor-pointer">Legal</a></li>
                   </ul>
               </div>
 
@@ -93,6 +93,15 @@
 
 <script setup>
 import { onMounted } from 'vue';
+
+const scrollToSection = (id) => {
+  const el = document.getElementById(id);
+  if (el) {
+    const navHeight = 80;
+    const top = el.getBoundingClientRect().top + window.scrollY - navHeight;
+    window.scrollTo({ top, behavior: 'smooth' });
+  }
+};
 
 onMounted(() => {
     // Simple Intersection Observer to trigger CTA glow on scroll

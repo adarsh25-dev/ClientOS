@@ -1,5 +1,5 @@
 <template>
-  <main class="flex-grow w-full max-w-[1440px] mx-auto px-margin-desktop py-stack-lg mt-12 md:mt-24 relative z-10">
+  <main id="platform" class="flex-grow w-full max-w-[1440px] mx-auto px-margin-desktop py-stack-lg mt-12 md:mt-24 relative z-10">
     <div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
         <!-- Left Sticky Panel -->
         <div class="md:col-span-5 relative">
@@ -12,7 +12,7 @@
                     <div class="progress-item text-on-surface-variant transition-all duration-500 font-body-lg text-body-lg cinematic-ease" data-target="card-0">
                         <span class="text-label-sm opacity-50 mr-4">01</span> Branded Portals
                     </div>
-                    <div class="progress-item text-on-surface-variant transition-all duration-500 font-body-lg text-body-lg cinematic-ease" data-target="card-1">
+                    <div class="progress-item text-on-surface-variant transition-all duration-500 font-body-lg text-body-lg cinematic-ease" data-target="intelligence">
                         <span class="text-label-sm opacity-50 mr-4">02</span> AI Project Summaries
                     </div>
                     <div class="progress-item text-on-surface-variant transition-all duration-500 font-body-lg text-body-lg cinematic-ease" data-target="card-2">
@@ -78,7 +78,7 @@
             </article>
 
             <!-- Card 2 -->
-            <article class="feature-card reveal-hidden transition-all duration-[1200ms] cinematic-ease bg-surface-dim border border-[#2A2D3A] hover:border-primary p-stack-lg md:p-[4rem] flex flex-col gap-stack-lg relative overflow-hidden" id="card-1">
+            <article class="feature-card reveal-hidden transition-all duration-[1200ms] cinematic-ease bg-surface-dim border border-[#2A2D3A] hover:border-primary p-stack-lg md:p-[4rem] flex flex-col gap-stack-lg relative overflow-hidden" id="intelligence">
                 <div class="absolute top-0 right-0 p-8 font-headline-xl text-headline-xl text-primary/10 select-none">02</div>
                 
                 <div class="flex flex-col gap-4 z-10">
